@@ -3,6 +3,8 @@ package amqp
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -78,7 +80,26 @@ func (t *AmqpTrigger) Start() error {
 		return err
 	}
 	log.Info(reliable)
-
+	//
+	// Initialize URI
+	//
+	AMQPInit("amqp://", 5672)
+	//
+	//	Create the exchange object
+	//
+	exch := AMQPExchangeNew("localhost", "exchange1", "topic", "queue1", "#", "mqtt", "mqtt", false, true, true)
+	if exch == nil {
+		errMsg := fmt.Sprintf("Unable to Create Exchange Object: %s", exch.ExchangeName)
+		log.Error(errMsg)
+		return errors.New(errMsg)
+	}
+	//
+	// Create the AMQP exchange
+	//
+	if err := exch.Open(true); err != nil {
+		log.Errorf("Unable to Open Exchange: %s : %s", exch.ExchangeName, err)
+		return err
+	}
 	//
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(t.config.GetSetting("broker"))
