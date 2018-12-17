@@ -1,4 +1,4 @@
-package mqtt
+package amqp
 
 import (
 	"encoding/json"
