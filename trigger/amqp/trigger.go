@@ -153,20 +153,20 @@ func (t *AmqpTrigger) Start() error {
 	//	return err
 	//}
 
-	//t.topicToHandler = make(map[string]*trigger.Handler)
+	t.topicToHandler = make(map[string]*trigger.Handler)
 
-	//for _, handler := range t.handlers {
+	for _, handler := range t.handlers {
 
-	//	topic := handler.GetStringSetting("topic")
-
-	//	if token := t.client.Subscribe(topic, byte(i), nil); token.Wait() && token.Error() != nil {
-	//		log.Errorf("Error subscribing to topic %s: %s", topic, token.Error())
-	//		return token.Error()
-	//	} else {
-	//		log.Debugf("Subscribed to topic: %s, will trigger handler: %s", topic, handler)
-	//		t.topicToHandler[topic] = handler
-	//	}
-	//}
+		topic := handler.GetStringSetting("topic")
+		log.Infof("Topic: %s", topic)
+		//	if token := t.client.Subscribe(topic, byte(i), nil); token.Wait() && token.Error() != nil {
+		//		log.Errorf("Error subscribing to topic %s: %s", topic, token.Error())
+		//		return token.Error()
+		//	} else {
+		//		log.Debugf("Subscribed to topic: %s, will trigger handler: %s", topic, handler)
+		t.topicToHandler[topic] = handler
+		//	}
+	}
 
 	return nil
 }
