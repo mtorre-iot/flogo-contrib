@@ -13,7 +13,7 @@ import (
 )
 
 // log is the default package logger
-var log = logger.GetLogger("trigger-flogo-mqtt")
+var log = logger.GetLogger("trigger-flogo-mqtt-mt")
 
 // MqttTrigger is simple MQTT trigger
 type MqttTrigger struct {
