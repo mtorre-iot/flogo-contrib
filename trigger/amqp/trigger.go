@@ -26,6 +26,7 @@ type AmqpTrigger struct {
 
 //NewFactory create a new Trigger factory
 func NewFactory(md *trigger.Metadata) trigger.Factory {
+	log.Debug("NewFactory")
 	return &AMQPFactory{metadata: md}
 }
 
@@ -36,23 +37,26 @@ type AMQPFactory struct {
 
 //New Creates a new trigger instance for a given id
 func (t *AMQPFactory) New(config *trigger.Config) trigger.Trigger {
+	log.Debug("New")
 	return &AmqpTrigger{metadata: t.metadata, config: config}
 }
 
 // Metadata implements trigger.Trigger.Metadata
 func (t *AmqpTrigger) Metadata() *trigger.Metadata {
+	log.Debug("Metadata")
 	return t.metadata
 }
 
 // Initialize implements trigger.Initializable.Initialize
 func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
+	log.Debug("Initialize")
 	t.handlers = ctx.GetHandlers()
 	return nil
 }
 
 // Start implements trigger.Trigger.Start
 func (t *AmqpTrigger) Start() error {
-
+	log.Debug("Start")
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(t.config.GetSetting("broker"))
 	opts.SetClientID(t.config.GetSetting("id"))
@@ -113,6 +117,7 @@ func (t *AmqpTrigger) Start() error {
 
 // Stop implements ext.Trigger.Stop
 func (t *AmqpTrigger) Stop() error {
+	log.Debug("Stop")
 	//unsubscribe from topic
 	for _, handlerCfg := range t.config.Handlers {
 		log.Debug("Unsubscribing from topic: ", handlerCfg.GetSetting("topic"))
@@ -128,7 +133,7 @@ func (t *AmqpTrigger) Stop() error {
 
 // RunHandler runs the handler and associated action
 func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
-
+	log.Debug("RunHandler")
 	trgData := make(map[string]interface{})
 	trgData["message"] = payload
 
@@ -164,6 +169,7 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 
 func (t *AmqpTrigger) publishMessage(topic string, message string) {
 
+	log.Debug("PublishMessage")
 	log.Debug("ReplyTo topic: ", topic)
 	log.Debug("Publishing message: ", message)
 
