@@ -205,7 +205,7 @@ func (exch *AMQPExchange) Publish(body string) error {
 }
 
 // PrepareReceive Prepares exchange/queue to receive messages
-func (exch *AMQPExchange) PrepareReceive() error {
+func (exch *AMQPExchange) PrepareReceiveFunc(f func(msgs <-chan amqp.Delivery)) error {
 	msgs, err := exch.Channel.Consume(
 		exch.QueueName, // queue
 		"",             // consumer
@@ -223,7 +223,8 @@ func (exch *AMQPExchange) PrepareReceive() error {
 		exch.IsOpen = false
 		return fmt.Errorf("Exchange PrepareReceive: %s", err)
 	}
-	go receiverTask(exch, msgs)
+	//go receiverTask(exch, msgs)
+	go f(msgs)
 	return nil
 }
 
@@ -247,8 +248,6 @@ func receiverTask(exch *AMQPExchange, msgs <-chan amqp.Delivery) {
 		msgsLock.Lock()
 		strm := fmt.Sprintf("%s", d.Body)
 		exch.Messages = append(exch.Messages, strm)
-		//fmt.Printf("Message: %s", strm)
-		//fmt.Println()
 		msgsLock.Unlock()
 	}
 }

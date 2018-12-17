@@ -12,6 +12,7 @@ import (
 	"github.com/TIBCOSoftware/flogo-lib/core/trigger"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 	"github.com/eclipse/paho.mqtt.golang"
+	"github.com/streadway/amqp"
 )
 
 // log is the default package logger
@@ -23,6 +24,7 @@ var (
 	ivRoutingKey   = "routingKey"
 	ivBody         = "body"
 	ivReliable     = "reliable"
+	exch	*AMQPExchange
 )
 
 // AmqpTrigger is simple AMQP trigger
@@ -101,6 +103,13 @@ func (t *AmqpTrigger) Start() error {
 		return err
 	}
 	//
+	// Prepare to receive
+	//
+	if err := exch.PrepareReceiveFunc(receiverHandler); err != nil {
+		log.Errorf("Unable to Prepare: %s to Receive. Error: %s. Bail out", err)
+		return err
+	}
+
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(t.config.GetSetting("broker"))
 	opts.SetClientID(t.config.GetSetting("id"))
@@ -158,6 +167,15 @@ func (t *AmqpTrigger) Start() error {
 
 	return nil
 }
+
+func receiverHandler(msgs <-chan amqp.Delivery) {
+	for d := range msgs {
+		strm := fmt.Sprintf("%s", d.Body)
+		//exch.Messages = append(exch.Messages, strm)
+		log.Infof("Message received: %s", strm)
+	}
+}
+
 
 // Stop implements ext.Trigger.Stop
 func (t *AmqpTrigger) Stop() error {
