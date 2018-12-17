@@ -24,8 +24,8 @@ var (
 	ivRoutingKey   = "routingKey"
 	ivBody         = "body"
 	ivReliable     = "reliable"
-	exch			*AMQPExchange
-	tr		  		*AMQPTrigger
+	exch           *AMQPExchange
+	tr             *AmqpTrigger
 )
 
 // AmqpTrigger is simple AMQP trigger
@@ -184,7 +184,6 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 		}
 	}
 }
-
 
 // Stop implements ext.Trigger.Stop
 func (t *AmqpTrigger) Stop() error {
