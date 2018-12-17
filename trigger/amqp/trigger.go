@@ -25,7 +25,7 @@ var (
 	ivBody         = "body"
 	ivReliable     = "reliable"
 	exch			*AMQPExchange
-	trigger  		*AMQPTrigger
+	tr		  		*AMQPTrigger
 )
 
 // AmqpTrigger is simple AMQP trigger
@@ -67,7 +67,7 @@ func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
 // Start implements trigger.Trigger.Start
 func (t *AmqpTrigger) Start() error {
 	//
-	trigger = t
+	tr = t
 	uri := t.config.GetSetting(ivUri)
 	log.Info(uri)
 	exchangeName := t.config.GetSetting(ivExchangeName)
@@ -175,13 +175,13 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 		payload := fmt.Sprintf("%s", d.Body)
 		//exch.Messages = append(exch.Messages, strm)
 		log.Infof("Message received: %s", payload)
-
-		handler, found := trigger.topicToHandler[topic]
-		//if found {
-			trigger.RunHandler(handler, payload)
-		//} else {
+		topic := "flogo/#"
+		handler, found := tr.topicToHandler[topic]
+		if found {
+			tr.RunHandler(handler, payload)
+		} else {
 			log.Errorf("handler for topic '%s' not found", topic)
-		//}
+		}
 	}
 }
 
