@@ -13,7 +13,15 @@ import (
 )
 
 // log is the default package logger
-var log = logger.GetLogger("trigger-flogo-amqp")
+var (
+	log            = logger.GetLogger("trigger-flogo-amqp")
+	ivUri          = "uri"
+	ivExchangeName = "exchangeName"
+	ivExchangeType = "exchangeType"
+	ivRoutingKey   = "routingKey"
+	ivBody         = "body"
+	ivReliable     = "reliable"
+)
 
 // AmqpTrigger is simple AMQP trigger
 type AmqpTrigger struct {
@@ -37,26 +45,41 @@ type AMQPFactory struct {
 
 //New Creates a new trigger instance for a given id
 func (t *AMQPFactory) New(config *trigger.Config) trigger.Trigger {
-	log.Info("New")
 	return &AmqpTrigger{metadata: t.metadata, config: config}
 }
 
 // Metadata implements trigger.Trigger.Metadata
 func (t *AmqpTrigger) Metadata() *trigger.Metadata {
-	log.Info("Metadata")
 	return t.metadata
 }
 
 // Initialize implements trigger.Initializable.Initialize
 func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
-	log.Info("Initialize")
 	t.handlers = ctx.GetHandlers()
 	return nil
 }
 
 // Start implements trigger.Trigger.Start
 func (t *AmqpTrigger) Start() error {
-	log.Info("Start")
+	//
+	uri := t.config.GetSetting(ivUri)
+	log.Info(uri)
+	exchangeName := t.config.GetSetting(ivExchangeName)
+	log.Info(exchangeName)
+	exchangeType := t.config.GetSetting(ivExchangeType)
+	log.Info(exchangeType)
+	routingKey := t.config.GetSetting(ivRoutingKey)
+	log.Info(routingKey)
+	body := t.config.GetSetting(ivBody)
+	log.Info(body)
+	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
+	if err != nil {
+		log.Error("Error converting \"ivReliable\" to a boolean ", err.Error())
+		return err
+	}
+	log.Info(reliable)
+
+	//
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(t.config.GetSetting("broker"))
 	opts.SetClientID(t.config.GetSetting("id"))
