@@ -176,7 +176,7 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 		payload := fmt.Sprintf("%s", d.Body)
 		//exch.Messages = append(exch.Messages, strm)
 		log.Infof("Message received: %s", payload)
-		topic := "flogo/#"
+		topic := fmt.Sprintf("%s", d.RoutingKey)
 		handler, found := tr.topicToHandler[topic]
 		if found {
 			tr.RunHandler(handler, payload)
