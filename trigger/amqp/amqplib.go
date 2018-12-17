@@ -204,7 +204,7 @@ func (exch *AMQPExchange) Publish(body string) error {
 	return nil
 }
 
-// PrepareReceive Prepares exchange/queue to receive messages
+// PrepareReceiveFunc Prepares exchange/queue to receive messages
 func (exch *AMQPExchange) PrepareReceiveFunc(f func(msgs <-chan amqp.Delivery)) error {
 	msgs, err := exch.Channel.Consume(
 		exch.QueueName, // queue
@@ -221,7 +221,7 @@ func (exch *AMQPExchange) PrepareReceiveFunc(f func(msgs <-chan amqp.Delivery)) 
 		exch.Channel = nil
 		exch.Connection = nil
 		exch.IsOpen = false
-		return fmt.Errorf("Exchange PrepareReceive: %s", err)
+		return fmt.Errorf("Exchange PrepareReceiveFunc: %s", err)
 	}
 	//go receiverTask(exch, msgs)
 	go f(msgs)

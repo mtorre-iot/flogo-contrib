@@ -84,6 +84,7 @@ func (t *AmqpTrigger) Start() error {
 		return err
 	}
 	log.Info(reliable)
+
 	//
 	// Initialize URI
 	//
@@ -175,7 +176,7 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 		payload := fmt.Sprintf("%s", d.Body)
 		//exch.Messages = append(exch.Messages, strm)
 		log.Infof("Message received: %s", payload)
-		topic := "XXX"
+		topic := "flogo/#"
 		handler, found := tr.topicToHandler[topic]
 		if found {
 			tr.RunHandler(handler, payload)
