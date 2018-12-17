@@ -112,60 +112,60 @@ func (t *AmqpTrigger) Start() error {
 		return err
 	}
 
-	opts := mqtt.NewClientOptions()
-	opts.AddBroker(t.config.GetSetting("broker"))
-	opts.SetClientID(t.config.GetSetting("id"))
-	opts.SetUsername(t.config.GetSetting("user"))
-	opts.SetPassword(t.config.GetSetting("password"))
-	b, err := data.CoerceToBoolean(t.config.Settings["cleansess"])
-	if err != nil {
-		log.Error("Error converting \"cleansess\" to a boolean ", err.Error())
-		return err
-	}
-	opts.SetCleanSession(b)
-	if storeType := t.config.Settings["store"]; storeType != ":memory:" {
-		opts.SetStore(mqtt.NewFileStore(t.config.GetSetting("store")))
-	}
+	//opts := mqtt.NewClientOptions()
+	//opts.AddBroker(t.config.GetSetting("broker"))
+	///opts.SetClientID(t.config.GetSetting("id"))
+	///opts.SetUsername(t.config.GetSetting("user"))
+	//opts.SetPassword(t.config.GetSetting("password"))
+	//b, err := data.CoerceToBoolean(t.config.Settings["cleansess"])
+	//if err != nil {
+	//	log.Error("Error converting \"cleansess\" to a boolean ", err.Error())
+	//	return err
+	//}
+	//opts.SetCleanSession(b)
+	//if storeType := t.config.Settings["store"]; storeType != ":memory:" {
+	//	opts.SetStore(mqtt.NewFileStore(t.config.GetSetting("store")))
+	//}
 
-	opts.SetDefaultPublishHandler(func(client mqtt.Client, msg mqtt.Message) {
-		topic := msg.Topic()
-		//TODO we should handle other types, since mqtt message format are data-agnostic
-		payload := string(msg.Payload())
-		log.Debug("Received msg:", payload)
-		handler, found := t.topicToHandler[topic]
-		if found {
-			t.RunHandler(handler, payload)
-		} else {
-			log.Errorf("handler for topic '%s' not found", topic)
-		}
-	})
+	//opts.SetDefaultPublishHandler(func(client mqtt.Client, msg mqtt.Message) {
+	//	topic := msg.Topic()
+	//	//TODO we should handle other types, since mqtt message format are data-agnostic
+	//	payload := string(msg.Payload())
+	//	log.Debug("Received msg:", payload)
+	//	handler, found := t.topicToHandler[topic]
+	//	if found {
+	//		t.RunHandler(handler, payload)
+	//	} else {
+	//		log.Errorf("handler for topic '%s' not found", topic)
+	//	}
+	//})
 
-	client := mqtt.NewClient(opts)
-	t.client = client
-	if token := client.Connect(); token.Wait() && token.Error() != nil {
-		panic(token.Error())
-	}
+	//client := mqtt.NewClient(opts)
+	//t.client = client
+	//if token := client.Connect(); token.Wait() && token.Error() != nil {
+	//	panic(token.Error())
+	//}
 
-	i, err := data.CoerceToDouble(t.config.Settings["qos"])
-	if err != nil {
-		log.Error("Error converting \"qos\" to an integer ", err.Error())
-		return err
-	}
+	//i, err := data.CoerceToDouble(t.config.Settings["qos"])
+	//if err != nil {
+	//	log.Error("Error converting \"qos\" to an integer ", err.Error())
+	//	return err
+	//}
 
-	t.topicToHandler = make(map[string]*trigger.Handler)
+	//t.topicToHandler = make(map[string]*trigger.Handler)
 
-	for _, handler := range t.handlers {
+	//for _, handler := range t.handlers {
 
-		topic := handler.GetStringSetting("topic")
+	//	topic := handler.GetStringSetting("topic")
 
-		if token := t.client.Subscribe(topic, byte(i), nil); token.Wait() && token.Error() != nil {
-			log.Errorf("Error subscribing to topic %s: %s", topic, token.Error())
-			return token.Error()
-		} else {
-			log.Debugf("Subscribed to topic: %s, will trigger handler: %s", topic, handler)
-			t.topicToHandler[topic] = handler
-		}
-	}
+	//	if token := t.client.Subscribe(topic, byte(i), nil); token.Wait() && token.Error() != nil {
+	//		log.Errorf("Error subscribing to topic %s: %s", topic, token.Error())
+	//		return token.Error()
+	//	} else {
+	//		log.Debugf("Subscribed to topic: %s, will trigger handler: %s", topic, handler)
+	//		t.topicToHandler[topic] = handler
+	//	}
+	//}
 
 	return nil
 }
@@ -175,7 +175,7 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 		payload := fmt.Sprintf("%s", d.Body)
 		//exch.Messages = append(exch.Messages, strm)
 		log.Infof("Message received: %s", payload)
-		topic := "flogo/#"
+		topic := "XXX"
 		handler, found := tr.topicToHandler[topic]
 		if found {
 			tr.RunHandler(handler, payload)
