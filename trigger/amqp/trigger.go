@@ -15,8 +15,8 @@ import (
 // log is the default package logger
 var log = logger.GetLogger("trigger-flogo-amqp")
 
-// MqttTrigger is simple MQTT trigger
-type MqttTrigger struct {
+// AmqpTrigger is simple AMQP trigger
+type AmqpTrigger struct {
 	metadata       *trigger.Metadata
 	client         mqtt.Client
 	config         *trigger.Config
@@ -26,32 +26,32 @@ type MqttTrigger struct {
 
 //NewFactory create a new Trigger factory
 func NewFactory(md *trigger.Metadata) trigger.Factory {
-	return &MQTTFactory{metadata: md}
+	return &AMQPFactory{metadata: md}
 }
 
-// MQTTFactory MQTT Trigger factory
-type MQTTFactory struct {
+// AMQPFactory AMQP Trigger factory
+type AMQPFactory struct {
 	metadata *trigger.Metadata
 }
 
 //New Creates a new trigger instance for a given id
-func (t *MQTTFactory) New(config *trigger.Config) trigger.Trigger {
-	return &MqttTrigger{metadata: t.metadata, config: config}
+func (t *AMQPFactory) New(config *trigger.Config) trigger.Trigger {
+	return &AmqpTrigger{metadata: t.metadata, config: config}
 }
 
 // Metadata implements trigger.Trigger.Metadata
-func (t *MqttTrigger) Metadata() *trigger.Metadata {
+func (t *AmqpTrigger) Metadata() *trigger.Metadata {
 	return t.metadata
 }
 
 // Initialize implements trigger.Initializable.Initialize
-func (t *MqttTrigger) Initialize(ctx trigger.InitContext) error {
+func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
 	t.handlers = ctx.GetHandlers()
 	return nil
 }
 
 // Start implements trigger.Trigger.Start
-func (t *MqttTrigger) Start() error {
+func (t *AmqpTrigger) Start() error {
 
 	opts := mqtt.NewClientOptions()
 	opts.AddBroker(t.config.GetSetting("broker"))
@@ -112,7 +112,7 @@ func (t *MqttTrigger) Start() error {
 }
 
 // Stop implements ext.Trigger.Stop
-func (t *MqttTrigger) Stop() error {
+func (t *AmqpTrigger) Stop() error {
 	//unsubscribe from topic
 	for _, handlerCfg := range t.config.Handlers {
 		log.Debug("Unsubscribing from topic: ", handlerCfg.GetSetting("topic"))
@@ -127,7 +127,7 @@ func (t *MqttTrigger) Stop() error {
 }
 
 // RunHandler runs the handler and associated action
-func (t *MqttTrigger) RunHandler(handler *trigger.Handler, payload string) {
+func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 
 	trgData := make(map[string]interface{})
 	trgData["message"] = payload
@@ -162,7 +162,7 @@ func (t *MqttTrigger) RunHandler(handler *trigger.Handler, payload string) {
 	}
 }
 
-func (t *MqttTrigger) publishMessage(topic string, message string) {
+func (t *AmqpTrigger) publishMessage(topic string, message string) {
 
 	log.Debug("ReplyTo topic: ", topic)
 	log.Debug("Publishing message: ", message)
