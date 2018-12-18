@@ -180,7 +180,7 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 			replyData = dataAttr.Value()
 		}
 	}
-
+	log.Infof("ReplyData: %s", replyData)
 	if replyData != nil {
 		dataJson, err := json.Marshal(replyData)
 		if err != nil {
