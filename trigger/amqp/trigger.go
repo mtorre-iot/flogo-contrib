@@ -170,7 +170,7 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 		log.Error("Error starting action: ", err.Error())
 	}
 
-	log.Infof("Ran Handler: [%s], Results: %s", handler, results)
+	log.Infof("Ran Handler: [%s], Results: %s", handler, results["data"])
 
 	var replyData interface{}
 
