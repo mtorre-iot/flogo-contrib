@@ -37,11 +37,11 @@ type AMQPExchange struct {
 var (
 	msgs     amqp.Delivery
 	msgsLock sync.Mutex
-	conf 	 AMQPConfiguration
 )
+
 //
 // AMQPExchangeNew creates a new exchange in the Broker
-func AMQPExchangeNew (hostName string,port int, exchangeName string, exchangeType string, queueName string, routingKey string,
+func AMQPExchangeNew(hostName string, port int, exchangeName string, exchangeType string, queueName string, routingKey string,
 	userName string, password string, durable bool, autoDelete bool, reliable bool) *AMQPExchange {
 	uri := buildURI(hostName, port, userName, password)
 	exch := AMQPExchange{uri, hostName, exchangeName, exchangeType, queueName, routingKey, userName, password, durable, autoDelete, reliable, nil, nil, nil, []string{}, nil, false}
