@@ -234,10 +234,10 @@ func (t *AmqpTrigger) Stop() error {
 func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 	trgData := make(map[string]interface{})
 	trgData["message"] = payload
-
-	results, err := handler.Handle(context.Background(), trgData)
 	
 	fmt.Println("map:", trgData)
+
+	results, err := handler.Handle(context.Background(), trgData)
 
 	if err != nil {
 		log.Error("Error starting action: ", err.Error())
