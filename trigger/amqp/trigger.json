@@ -2,7 +2,7 @@
   "name": "flogo-amqp",
   "type": "flogo:trigger",
   "ref": "github.com/mtorre-iot/flogo-contrib/trigger/amqp",
-  "version": "0.0.1",
+  "version": "0.5.6",
   "title": "Receive AMQP Message",
   "author": "Mario Torre <mtorre.work@gmail.com>",
   "description": "Simple AMQP Trigger",
