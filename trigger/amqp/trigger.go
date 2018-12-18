@@ -39,8 +39,6 @@ var (
 	rsDurable      = "responseDurable"
 	rsAutoDelete   = "responseAutoDelete"
 	rsReliable     = "responseReliable"
-
-	tr *AmqpTrigger
 )
 
 // AmqpTrigger is simple AMQP trigger
@@ -83,7 +81,6 @@ func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
 // Start implements trigger.Trigger.Start
 func (t *AmqpTrigger) Start() error {
 	//
-	tr = t
 	hostName := t.config.GetSetting(ivHostName)
 	port, err := strconv.Atoi(t.config.GetSetting(ivPort))
 	if err != nil {
@@ -158,7 +155,7 @@ func (t *AmqpTrigger) Start() error {
 	//
 	// Prepare to receive
 	//
-	if err := t.reqExch.PrepareReceiveFunc(receiverHandler); err != nil {
+	if err := t.reqExch.PrepareReceiveFunc(t.receiverHandler); err != nil {
 		log.Errorf("Request Exchange: Unable to Prepare: %s to Receive. Error: %s. Bail out", err)
 		return err
 	}
@@ -201,14 +198,14 @@ func (t *AmqpTrigger) Start() error {
 	return nil
 }
 
-func receiverHandler(msgs <-chan amqp.Delivery) {
+func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		payload := fmt.Sprintf("%s", d.Body)
 		log.Infof("Message received: %s", payload)
 		topic := fmt.Sprintf("%s", d.RoutingKey)
-		handler, found := tr.topicToHandler[topic]
+		handler, found := t.topicToHandler[topic]
 		if found {
-			tr.RunHandler(handler, payload)
+			t.RunHandler(handler, payload)
 		} else {
 			log.Errorf("handler for topic '%s' not found", topic)
 		}
