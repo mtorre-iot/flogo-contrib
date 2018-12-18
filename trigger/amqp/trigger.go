@@ -131,7 +131,6 @@ func (t *AmqpTrigger) Start() error {
 	t.topicToHandler = make(map[string]*trigger.Handler)
 
 	for _, handler := range t.handlers {
-		log.Infof("Topic: %s", topic)
 		t.topicToHandler[topic] = handler
 	}
 
@@ -156,16 +155,8 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 // Stop implements ext.Trigger.Stop
 func (t *AmqpTrigger) Stop() error {
 	log.Info("Stop")
-	//unsubscribe from topic
-	for _, handlerCfg := range t.config.Handlers {
-		log.Debug("Unsubscribing from topic: ", handlerCfg.GetSetting("topic"))
-		if token := t.client.Unsubscribe(handlerCfg.GetSetting("topic")); token.Wait() && token.Error() != nil {
-			log.Errorf("Error unsubscribing from topic %s: %s", handlerCfg.Settings["topic"], token.Error())
-		}
-	}
-
-	t.client.Disconnect(250)
-
+	//Close Exchange
+	exch.Close()
 	return nil
 }
 
