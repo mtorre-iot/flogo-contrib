@@ -154,7 +154,6 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 
 // Stop implements ext.Trigger.Stop
 func (t *AmqpTrigger) Stop() error {
-	log.Info("Stop")
 	//Close Exchange
 	exch.Close()
 	return nil
@@ -162,7 +161,6 @@ func (t *AmqpTrigger) Stop() error {
 
 // RunHandler runs the handler and associated action
 func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
-	log.Info("RunHandler")
 	trgData := make(map[string]interface{})
 	trgData["message"] = payload
 
@@ -198,7 +196,6 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 
 func (t *AmqpTrigger) publishMessage(topic string, message string) {
 
-	log.Info("PublishMessage")
 	log.Debug("ReplyTo topic: ", topic)
 	log.Debug("Publishing message: ", message)
 
