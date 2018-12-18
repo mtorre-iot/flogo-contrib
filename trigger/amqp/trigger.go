@@ -79,7 +79,6 @@ func (t *AmqpTrigger) Start() error {
 	queueName := t.config.GetSetting(ivQueueName)
 	exchangeType := t.config.GetSetting(ivExchangeType)
 	routingKey := t.config.GetSetting(ivRoutingKey)
-	topic := t.config.GetSetting(ivTopic)
 	user := t.config.GetSetting(ivUser)
 	password := t.config.GetSetting(ivPassword)
 	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
@@ -131,6 +130,7 @@ func (t *AmqpTrigger) Start() error {
 	t.topicToHandler = make(map[string]*trigger.Handler)
 
 	for _, handler := range t.handlers {
+		topic := handler.GetStringSetting("topic")
 		t.topicToHandler[topic] = handler
 	}
 
