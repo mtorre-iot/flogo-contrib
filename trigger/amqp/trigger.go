@@ -145,7 +145,6 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 		topic := fmt.Sprintf("%s", d.RoutingKey)
 		handler, found := tr.topicToHandler[topic]
 		if found {
-			log.Infof("Selected handler: %s", handler)
 			tr.RunHandler(handler, payload)
 		} else {
 			log.Errorf("handler for topic '%s' not found", topic)
@@ -171,7 +170,7 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 		log.Error("Error starting action: ", err.Error())
 	}
 
-	log.Debugf("Ran Handler: [%s]", handler)
+	log.Infof("Ran Handler: [%s], Results: %s", handler, results)
 
 	var replyData interface{}
 
