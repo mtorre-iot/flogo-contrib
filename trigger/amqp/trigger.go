@@ -22,8 +22,10 @@ var (
 	ivExchangeName = "exchangeName"
 	ivExchangeType = "exchangeType"
 	ivRoutingKey   = "routingKey"
-	ivBody         = "body"
+	ivTopic		   = "topic"
 	ivReliable     = "reliable"
+	ivUser		   = "user"
+	ivPassword	   = "password"
 	exch           *AMQPExchange
 	tr             *AmqpTrigger
 )
@@ -39,7 +41,6 @@ type AmqpTrigger struct {
 
 //NewFactory create a new Trigger factory
 func NewFactory(md *trigger.Metadata) trigger.Factory {
-	log.Info("NewFactory")
 	return &AMQPFactory{metadata: md}
 }
 
@@ -76,15 +77,18 @@ func (t *AmqpTrigger) Start() error {
 	log.Info(exchangeType)
 	routingKey := t.config.GetSetting(ivRoutingKey)
 	log.Info(routingKey)
-	body := t.config.GetSetting(ivBody)
-	log.Info(body)
 	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
 	if err != nil {
 		log.Error("Error converting \"ivReliable\" to a boolean ", err.Error())
 		return err
 	}
 	log.Info(reliable)
-
+	topic := t.config.GetSetting(ivTopic)
+	log.Info(topic)
+	user := t.config.GetSetting(ivUser)
+	log.Info(user)
+	password := t.config.GetSetting(ivPassword)
+	log.Info(password)
 	//
 	// Initialize URI
 	//
@@ -157,7 +161,7 @@ func (t *AmqpTrigger) Start() error {
 
 	for _, handler := range t.handlers {
 
-		topic := handler.GetStringSetting("topic")
+		//topic := handler.GetStringSetting(ivTopic)
 		log.Infof("Topic: %s", topic)
 		//	if token := t.client.Subscribe(topic, byte(i), nil); token.Wait() && token.Error() != nil {
 		//		log.Errorf("Error subscribing to topic %s: %s", topic, token.Error())
