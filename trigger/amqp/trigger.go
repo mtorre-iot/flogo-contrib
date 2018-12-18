@@ -18,14 +18,15 @@ import (
 // log is the default package logger
 var (
 	log            = logger.GetLogger("trigger-flogo-amqp")
-	ivUri          = "uri"
+	ivHostName     = "hostName"
+	ivPort         = "port"
 	ivExchangeName = "exchangeName"
 	ivExchangeType = "exchangeType"
 	ivRoutingKey   = "routingKey"
-	ivTopic		   = "topic"
+	ivTopic        = "topic"
 	ivReliable     = "reliable"
-	ivUser		   = "user"
-	ivPassword	   = "password"
+	ivUser         = "user"
+	ivPassword     = "password"
 	exch           *AMQPExchange
 	tr             *AmqpTrigger
 )
@@ -69,8 +70,10 @@ func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
 func (t *AmqpTrigger) Start() error {
 	//
 	tr = t
-	uri := t.config.GetSetting(ivUri)
-	log.Info(uri)
+	hostName := t.config.GetSetting(ivHostName)
+	log.Info(hostName)
+	port := t.config.GetSetting(ivPort)
+	log.Info(port)
 	exchangeName := t.config.GetSetting(ivExchangeName)
 	log.Info(exchangeName)
 	exchangeType := t.config.GetSetting(ivExchangeType)
@@ -79,7 +82,7 @@ func (t *AmqpTrigger) Start() error {
 	log.Info(routingKey)
 	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
 	if err != nil {
-		log.Error("Error converting \"ivReliable\" to a boolean ", err.Error())
+		log.Error("Error converting \"Reliable\" to a boolean ", err.Error())
 		return err
 	}
 	log.Info(reliable)
@@ -92,7 +95,10 @@ func (t *AmqpTrigger) Start() error {
 	//
 	// Initialize URI
 	//
-	AMQPInit("amqp://", 5672)
+	err = AMQPInit("amqp://", "5672")
+	if err != nil {
+		log.Errorf("Error trying to configure AMQP URI. %s", err.Error())
+	}
 	//
 	//	Create the exchange object
 	//

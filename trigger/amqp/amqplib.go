@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
+	"strconv"
 
 	"github.com/streadway/amqp"
 )
@@ -36,7 +37,7 @@ type AMQPExchange struct {
 // AMQPConfiguration main AMQP Connection configuration
 type AMQPConfiguration struct {
 	UriPrefix 	string 	// Broker access URI prefix
-	Port		int		// broker port
+	Port		int64	// broker port
 }
 var (
 	msgs     amqp.Delivery
@@ -44,9 +45,11 @@ var (
 	conf 	 AMQPConfiguration
 )
 // AMQPInit AMPQ intializer
-func AMQPInit (prefix string, port int) {
+func AMQPInit (prefix string, port string) error {
 	conf.UriPrefix = prefix
-	conf.Port = port
+	var err error
+	conf.Port, err = strconv.ParseInt(port, 10, 64)
+	return err
 }
 //
 //
