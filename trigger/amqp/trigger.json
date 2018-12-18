@@ -9,34 +9,109 @@
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/trigger/amqp",
   "settings":[
     {
-      "name": "broker",
+      "name": "requestHostName",
       "type": "string",
       "required": true
     },
     {
-      "name": "id",
+      "name": "requestPort",
       "type": "string",
       "required": true
     },
     {
-      "name": "user",
-      "type": "string"
+      "name": "requestExchangeName",
+      "type": "string",
+      "required": true
     },
     {
-      "name": "password",
-      "type": "string"
+      "name": "requestQueueName",
+      "type": "string",
+      "required": true
     },
     {
-      "name": "store",
-      "type": "string"
+      "name": "requestExchangeType",
+      "type": "string",
+      "required": true
     },
     {
-      "name": "qos",
-      "type": "double"
+      "name": "requestRoutingKey",
+      "type": "string",
+      "required": true
     },
     {
-      "name": "cleansess",
-      "type": "boolean"
+      "name": "requestUser",
+      "type": "string",
+      "required": true
+    },    
+    {
+      "name": "requestPassword",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestDurable",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestAutoDelete",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestReliable",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "responseHostName",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responsePort",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseExchangeName",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseExchangeType",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseRoutingKey",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseUser",
+      "type": "string",
+      "required": false
+    },    
+    {
+      "name": "responsePassword",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseDurable",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseAutoDelete",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseReliable",
+      "type": "string",
+      "required": false
     }
   ],
   "output": [
