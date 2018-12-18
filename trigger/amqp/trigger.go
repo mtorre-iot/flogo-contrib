@@ -268,7 +268,7 @@ func (t *AmqpTrigger) publishMessage(topic string, message string) {
 	err := t.resExch.Publish(message)
 	if err != nil {
 		// Timeout occurred
-		log.Errorf("Error occurred while trying to publish to Exchange '%s'", resExch.ExchangeName)
+		log.Errorf("Error occurred while trying to publish to Exchange '%s'", t.resExch.ExchangeName)
 		return
 	}
 }
