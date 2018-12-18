@@ -30,19 +30,20 @@ var (
 	ivReliable     = "reliable"
 	ivUser         = "user"
 	ivPassword     = "password"
-
 	rsHostName     = "responsehostName"
 	rsPort         = "responsePort"
 	rsExchangeName = "responseExchangeName"
 	rsExchangeType = "responseExchangeType"
+	rsRoutingKey   = "responseRoutingKey"
 	rsUser         = "responseUser"
 	rsPassword     = "responsePassword"
 	rsDurable      = "responseDurable"
 	rsAutoDelete   = "responseAutoDelete"
 	rsReliable     = "responseReliable"
 
-	exch *AMQPExchange
-	tr   *AmqpTrigger
+	reqExch *AMQPExchange
+	resExch *AMQPExchange
+	tr      *AmqpTrigger
 )
 
 // AmqpTrigger is simple AMQP trigger
@@ -87,7 +88,7 @@ func (t *AmqpTrigger) Start() error {
 	hostName := t.config.GetSetting(ivHostName)
 	port, err := strconv.Atoi(t.config.GetSetting(ivPort))
 	if err != nil {
-		log.Error("Error converting \"Port\" to an integer ", err.Error())
+		log.Error("Request Exchange: Error converting \"Port\" to an integer ", err.Error())
 		return err
 	}
 	exchangeName := t.config.GetSetting(ivExchangeName)
@@ -98,70 +99,99 @@ func (t *AmqpTrigger) Start() error {
 	password := t.config.GetSetting(ivPassword)
 	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
 	if err != nil {
-		log.Error("Error converting \"Reliable\" to a boolean ", err.Error())
+		log.Error("Request Exchange: Error converting \"Reliable\" to a boolean ", err.Error())
 		return err
 	}
 	durable, err := data.CoerceToBoolean(t.config.Settings[ivDurable])
 	if err != nil {
-		log.Error("Error converting \"Durable\" to a boolean ", err.Error())
+		log.Error("Request Exchange: Error converting \"Durable\" to a boolean ", err.Error())
 		return err
 	}
 	autoDelete, err := data.CoerceToBoolean(t.config.Settings[ivAutoDelete])
 	if err != nil {
-		log.Error("Error converting \"AutoDelete\" to a boolean ", err.Error())
+		log.Error("Request Exchange: Error converting \"AutoDelete\" to a boolean ", err.Error())
 		return err
 	}
 
 	responseHostName := t.config.GetSetting(rsHostName)
 	responsePort, err := strconv.Atoi(t.config.GetSetting(rsPort))
 	if err != nil {
-		log.Error("Error converting \"Port\" to an integer ", err.Error())
+		log.Error("Response Exchange: Error converting \"Port\" to an integer ", err.Error())
 		return err
 	}
 	responseExchangeName := t.config.GetSetting(rsExchangeName)
 	responseExchangeType := t.config.GetSetting(rsExchangeType)
+	responseRoutingKey := t.config.GetSetting(rsRoutingKey)
 	responseUser := t.config.GetSetting(rsUser)
 	responsePassword := t.config.GetSetting(rsPassword)
 	responseReliable, err := data.CoerceToBoolean(t.config.Settings[rsReliable])
 	if err != nil {
-		log.Error("Error converting \"Reliable\" to a boolean ", err.Error())
+		log.Error("Response Exchange: Error converting \"Reliable\" to a boolean ", err.Error())
 		return err
 	}
 	responseDurable, err := data.CoerceToBoolean(t.config.Settings[rsDurable])
 	if err != nil {
-		log.Error("Error converting \"Durable\" to a boolean ", err.Error())
+		log.Error("Response Exchange: Error converting \"Durable\" to a boolean ", err.Error())
 		return err
 	}
 	responseAutoDelete, err := data.CoerceToBoolean(t.config.Settings[rsAutoDelete])
 	if err != nil {
-		log.Error("Error converting \"AutoDelete\" to a boolean ", err.Error())
+		log.Error("Response Exchange: Error converting \"AutoDelete\" to a boolean ", err.Error())
 		return err
 	}
 	log.Info(responseHostName, responsePort, responseExchangeName, responseExchangeType, responseUser, responsePassword, responseReliable, responseDurable, responseAutoDelete)
 	//
-	//	Create the exchange object
+	//	Create the request exchange object
 	//
-	exch := AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
-	if exch == nil {
-		errMsg := fmt.Sprintf("Unable to Create Exchange Object: %s", exch.ExchangeName)
+	reqExch := AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
+	if reqExch == nil {
+		errMsg := fmt.Sprintf("Request Exchange: Unable to Create Exchange Object: %s", reqExch.ExchangeName)
 		log.Error(errMsg)
 		return errors.New(errMsg)
 	}
 	//
-	// Create the AMQP exchange
+	// Create the AMQP Request Exchange
 	//
-	if err := exch.Open(true); err != nil {
-		log.Errorf("Unable to Open Exchange: %s : %s", exch.ExchangeName, err)
+	if err := reqExch.Open(true); err != nil {
+		log.Errorf("Request Exchange: Unable to Open Exchange: %s : %s", reqExch.ExchangeName, err)
 		return err
 	}
 	//
 	// Prepare to receive
 	//
-	if err := exch.PrepareReceiveFunc(receiverHandler); err != nil {
-		log.Errorf("Unable to Prepare: %s to Receive. Error: %s. Bail out", err)
+	if err := reqExch.PrepareReceiveFunc(receiverHandler); err != nil {
+		log.Errorf("Request Exchange: Unable to Prepare: %s to Receive. Error: %s. Bail out", err)
 		return err
 	}
+	//
+	//	Create the response exchange object
+	//
+	if responseHostName != "" {
+		resExch := AMQPExchangeNew(responseHostName,
+			responsePort,
+			responseExchangeName,
+			responseExchangeType,
+			"",
+			responseRoutingKey,
+			responseUser,
+			responsePassword,
+			responseDurable,
+			responseAutoDelete,
+			responseReliable)
 
+		if resExch == nil {
+			errMsg := fmt.Sprintf("Response Exchange: Unable to Create Exchange Object: %s", reqExch.ExchangeName)
+			log.Error(errMsg)
+			return errors.New(errMsg)
+		}
+		//
+		// Create the AMQP Response Exchange
+		//
+		if err := resExch.Open(false); err != nil {
+			log.Errorf("Response Exchange: Unable to Open Exchange: %s : %s", reqExch.ExchangeName, err)
+			return err
+		}
+	}
 	t.topicToHandler = make(map[string]*trigger.Handler)
 
 	for _, handler := range t.handlers {
@@ -175,7 +205,6 @@ func (t *AmqpTrigger) Start() error {
 func receiverHandler(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		payload := fmt.Sprintf("%s", d.Body)
-		//exch.Messages = append(exch.Messages, strm)
 		log.Infof("Message received: %s", payload)
 		topic := fmt.Sprintf("%s", d.RoutingKey)
 		handler, found := tr.topicToHandler[topic]
@@ -190,7 +219,7 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 // Stop implements ext.Trigger.Stop
 func (t *AmqpTrigger) Stop() error {
 	//Close Exchange
-	exch.Close()
+	reqExch.Close()
 	return nil
 }
 
