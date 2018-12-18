@@ -166,7 +166,7 @@ func (t *AmqpTrigger) Start() error {
 	//	Create the response exchange object
 	//
 	if responseHostName != "" {
-		resExch := AMQPExchangeNew(responseHostName,
+		resExch = AMQPExchangeNew(responseHostName,
 			responsePort,
 			responseExchangeName,
 			responseExchangeType,
@@ -265,7 +265,6 @@ func (t *AmqpTrigger) publishMessage(topic string, message string) {
 		log.Warn("Invalid empty topic to publish to")
 		return
 	}
-	log.Info(resExch)
 	err := resExch.Publish(message)
 	if err != nil {
 		// Timeout occurred
