@@ -74,42 +74,29 @@ func (t *AmqpTrigger) Start() error {
 	//
 	tr = t
 	hostName := t.config.GetSetting(ivHostName)
-	log.Info(hostName)
 	port := t.config.GetSetting(ivPort)
-	log.Info(port)
 	exchangeName := t.config.GetSetting(ivExchangeName)
-	log.Info(exchangeName)
 	queueName := t.config.GetSetting(ivQueueName)
-	log.Info(exchangeName)
 	exchangeType := t.config.GetSetting(ivExchangeType)
-	log.Info(exchangeType)
 	routingKey := t.config.GetSetting(ivRoutingKey)
-	log.Info(routingKey)
 	topic := t.config.GetSetting(ivTopic)
-	log.Info(topic)
 	user := t.config.GetSetting(ivUser)
-	log.Info(user)
 	password := t.config.GetSetting(ivPassword)
-	log.Info(password)
 	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
 	if err != nil {
 		log.Error("Error converting \"Reliable\" to a boolean ", err.Error())
 		return err
 	}
-	log.Info(reliable)
 	durable, err := data.CoerceToBoolean(t.config.Settings[ivDurable])
 	if err != nil {
 		log.Error("Error converting \"Durable\" to a boolean ", err.Error())
 		return err
 	}
-	log.Info(durable)
 	autoDelete, err := data.CoerceToBoolean(t.config.Settings[ivAutoDelete])
 	if err != nil {
 		log.Error("Error converting \"AutoDelete\" to a boolean ", err.Error())
 		return err
 	}
-	log.Info(autoDelete)
-
 	//
 	// Initialize URI
 	//
@@ -141,59 +128,11 @@ func (t *AmqpTrigger) Start() error {
 		return err
 	}
 
-	//opts := mqtt.NewClientOptions()
-	//opts.AddBroker(t.config.GetSetting("broker"))
-	///opts.SetClientID(t.config.GetSetting("id"))
-	///opts.SetUsername(t.config.GetSetting("user"))
-	//opts.SetPassword(t.config.GetSetting("password"))
-	//b, err := data.CoerceToBoolean(t.config.Settings["cleansess"])
-	//if err != nil {
-	//	log.Error("Error converting \"cleansess\" to a boolean ", err.Error())
-	//	return err
-	//}
-	//opts.SetCleanSession(b)
-	//if storeType := t.config.Settings["store"]; storeType != ":memory:" {
-	//	opts.SetStore(mqtt.NewFileStore(t.config.GetSetting("store")))
-	//}
-
-	//opts.SetDefaultPublishHandler(func(client mqtt.Client, msg mqtt.Message) {
-	//	topic := msg.Topic()
-	//	//TODO we should handle other types, since mqtt message format are data-agnostic
-	//	payload := string(msg.Payload())
-	//	log.Debug("Received msg:", payload)
-	//	handler, found := t.topicToHandler[topic]
-	//	if found {
-	//		t.RunHandler(handler, payload)
-	//	} else {
-	//		log.Errorf("handler for topic '%s' not found", topic)
-	//	}
-	//})
-
-	//client := mqtt.NewClient(opts)
-	//t.client = client
-	//if token := client.Connect(); token.Wait() && token.Error() != nil {
-	//	panic(token.Error())
-	//}
-
-	//i, err := data.CoerceToDouble(t.config.Settings["qos"])
-	//if err != nil {
-	//	log.Error("Error converting \"qos\" to an integer ", err.Error())
-	//	return err
-	//}
-
 	t.topicToHandler = make(map[string]*trigger.Handler)
 
 	for _, handler := range t.handlers {
-
-		//topic := handler.GetStringSetting(ivTopic)
 		log.Infof("Topic: %s", topic)
-		//	if token := t.client.Subscribe(topic, byte(i), nil); token.Wait() && token.Error() != nil {
-		//		log.Errorf("Error subscribing to topic %s: %s", topic, token.Error())
-		//		return token.Error()
-		//	} else {
-		//		log.Debugf("Subscribed to topic: %s, will trigger handler: %s", topic, handler)
 		t.topicToHandler[topic] = handler
-		//	}
 	}
 
 	return nil
