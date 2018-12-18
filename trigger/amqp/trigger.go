@@ -40,9 +40,7 @@ var (
 	rsAutoDelete   = "responseAutoDelete"
 	rsReliable     = "responseReliable"
 
-	reqExch *AMQPExchange
-	resExch *AMQPExchange
-	tr      *AmqpTrigger
+	tr *AmqpTrigger
 )
 
 // AmqpTrigger is simple AMQP trigger
@@ -52,6 +50,8 @@ type AmqpTrigger struct {
 	config         *trigger.Config
 	handlers       []*trigger.Handler
 	topicToHandler map[string]*trigger.Handler
+	reqExch        *AMQPExchange
+	resExch        *AMQPExchange
 }
 
 //NewFactory create a new Trigger factory
@@ -142,23 +142,23 @@ func (t *AmqpTrigger) Start() error {
 	//
 	//	Create the request exchange object
 	//
-	reqExch = AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
-	if reqExch == nil {
-		errMsg := fmt.Sprintf("Request Exchange: Unable to Create Exchange Object: %s", reqExch.ExchangeName)
+	t.reqExch = AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
+	if t.reqExch == nil {
+		errMsg := fmt.Sprintf("Request Exchange: Unable to Create Exchange Object: %s", t.reqExch.ExchangeName)
 		log.Error(errMsg)
 		return errors.New(errMsg)
 	}
 	//
 	// Create the AMQP Request Exchange
 	//
-	if err := reqExch.Open(true); err != nil {
-		log.Errorf("Request Exchange: Unable to Open Exchange: %s : %s", reqExch.ExchangeName, err)
+	if err := t.reqExch.Open(true); err != nil {
+		log.Errorf("Request Exchange: Unable to Open Exchange: %s : %s", t.reqExch.ExchangeName, err)
 		return err
 	}
 	//
 	// Prepare to receive
 	//
-	if err := reqExch.PrepareReceiveFunc(receiverHandler); err != nil {
+	if err := t.reqExch.PrepareReceiveFunc(receiverHandler); err != nil {
 		log.Errorf("Request Exchange: Unable to Prepare: %s to Receive. Error: %s. Bail out", err)
 		return err
 	}
@@ -166,7 +166,7 @@ func (t *AmqpTrigger) Start() error {
 	//	Create the response exchange object
 	//
 	if responseHostName != "" {
-		resExch = AMQPExchangeNew(responseHostName,
+		t.resExch = AMQPExchangeNew(responseHostName,
 			responsePort,
 			responseExchangeName,
 			responseExchangeType,
@@ -178,16 +178,16 @@ func (t *AmqpTrigger) Start() error {
 			responseAutoDelete,
 			responseReliable)
 
-		if resExch == nil {
-			errMsg := fmt.Sprintf("Response Exchange: Unable to Create Exchange Object: %s", reqExch.ExchangeName)
+		if t.resExch == nil {
+			errMsg := fmt.Sprintf("Response Exchange: Unable to Create Exchange Object: %s", t.resExch.ExchangeName)
 			log.Error(errMsg)
 			return errors.New(errMsg)
 		}
 		//
 		// Create the AMQP Response Exchange
 		//
-		if err := resExch.Open(false); err != nil {
-			log.Errorf("Response Exchange: Unable to Open Exchange: %s : %s", reqExch.ExchangeName, err)
+		if err := t.resExch.Open(false); err != nil {
+			log.Errorf("Response Exchange: Unable to Open Exchange: %s : %s", t.resExch.ExchangeName, err)
 			return err
 		}
 	}
@@ -218,8 +218,8 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 // Stop implements ext.Trigger.Stop
 func (t *AmqpTrigger) Stop() error {
 	//Close Exchange
-	reqExch.Close()
-	resExch.Close()
+	t.reqExch.Close()
+	t.resExch.Close()
 	return nil
 }
 
@@ -265,7 +265,7 @@ func (t *AmqpTrigger) publishMessage(topic string, message string) {
 		log.Warn("Invalid empty topic to publish to")
 		return
 	}
-	err := resExch.Publish(message)
+	err := t.resExch.Publish(message)
 	if err != nil {
 		// Timeout occurred
 		log.Errorf("Error occurred while trying to publish to Exchange '%s'", resExch.ExchangeName)
