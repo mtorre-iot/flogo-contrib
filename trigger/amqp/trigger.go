@@ -21,9 +21,12 @@ var (
 	ivHostName     = "hostName"
 	ivPort         = "port"
 	ivExchangeName = "exchangeName"
+	ivQueueName    = "queueName"
 	ivExchangeType = "exchangeType"
 	ivRoutingKey   = "routingKey"
 	ivTopic        = "topic"
+	ivDurable      = "durable"
+	ivAutoDelete   = "autoDelete"
 	ivReliable     = "reliable"
 	ivUser         = "user"
 	ivPassword     = "password"
@@ -76,33 +79,48 @@ func (t *AmqpTrigger) Start() error {
 	log.Info(port)
 	exchangeName := t.config.GetSetting(ivExchangeName)
 	log.Info(exchangeName)
+	queueName := t.config.GetSetting(ivQueueName)
+	log.Info(exchangeName)
 	exchangeType := t.config.GetSetting(ivExchangeType)
 	log.Info(exchangeType)
 	routingKey := t.config.GetSetting(ivRoutingKey)
 	log.Info(routingKey)
-	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
-	if err != nil {
-		log.Error("Error converting \"Reliable\" to a boolean ", err.Error())
-		return err
-	}
-	log.Info(reliable)
 	topic := t.config.GetSetting(ivTopic)
 	log.Info(topic)
 	user := t.config.GetSetting(ivUser)
 	log.Info(user)
 	password := t.config.GetSetting(ivPassword)
 	log.Info(password)
+	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
+	if err != nil {
+		log.Error("Error converting \"Reliable\" to a boolean ", err.Error())
+		return err
+	}
+	log.Info(reliable)
+	durable, err := data.CoerceToBoolean(t.config.Settings[ivDurable])
+	if err != nil {
+		log.Error("Error converting \"Durable\" to a boolean ", err.Error())
+		return err
+	}
+	log.Info(durable)
+	autoDelete, err := data.CoerceToBoolean(t.config.Settings[ivAutoDelete])
+	if err != nil {
+		log.Error("Error converting \"AutoDelete\" to a boolean ", err.Error())
+		return err
+	}
+	log.Info(autoDelete)
+
 	//
 	// Initialize URI
 	//
-	err = AMQPInit("amqp://", "5672")
+	err = AMQPInit("amqp://", port)
 	if err != nil {
 		log.Errorf("Error trying to configure AMQP URI. %s", err.Error())
 	}
 	//
 	//	Create the exchange object
 	//
-	exch := AMQPExchangeNew("localhost", "exchange1", "topic", "queue1", "#", "mqtt", "mqtt", false, true, true)
+	exch := AMQPExchangeNew(hostName, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
 	if exch == nil {
 		errMsg := fmt.Sprintf("Unable to Create Exchange Object: %s", exch.ExchangeName)
 		log.Error(errMsg)
