@@ -30,8 +30,19 @@ var (
 	ivReliable     = "reliable"
 	ivUser         = "user"
 	ivPassword     = "password"
-	exch           *AMQPExchange
-	tr             *AmqpTrigger
+
+	rsHostName     = "responsehostName"
+	rsPort         = "responsePort"
+	rsExchangeName = "responseExchangeName"
+	rsExchangeType = "responseExchangeType"
+	rsUser         = "responseUser"
+	rsPassword     = "responsePassword"
+	rsDurable      = "responseDurable"
+	rsAutoDelete   = "responseAutoDelete"
+	rsReliable     = "responseReliable"
+
+	exch *AMQPExchange
+	tr   *AmqpTrigger
 )
 
 // AmqpTrigger is simple AMQP trigger
@@ -74,7 +85,11 @@ func (t *AmqpTrigger) Start() error {
 	//
 	tr = t
 	hostName := t.config.GetSetting(ivHostName)
-	port := t.config.GetSetting(ivPort)
+	port, err := strconv.Atoi(t.config.GetSetting(ivPort))
+	if err != nil {
+		log.Error("Error converting \"Port\" to an integer ", err.Error())
+		return err
+	}
 	exchangeName := t.config.GetSetting(ivExchangeName)
 	queueName := t.config.GetSetting(ivQueueName)
 	exchangeType := t.config.GetSetting(ivExchangeType)
@@ -96,17 +111,37 @@ func (t *AmqpTrigger) Start() error {
 		log.Error("Error converting \"AutoDelete\" to a boolean ", err.Error())
 		return err
 	}
-	//
-	// Initialize URI
-	//
-	err = AMQPInit("amqp://", port)
+
+	responseHostName := t.config.GetSetting(rsHostName)
+	responsePort, err := strconv.Atoi(t.config.GetSetting(rsPort))
 	if err != nil {
-		log.Errorf("Error trying to configure AMQP URI. %s", err.Error())
+		log.Error("Error converting \"Port\" to an integer ", err.Error())
+		return err
 	}
+	responseExchangeName := t.config.GetSetting(rsExchangeName)
+	responseExchangeType := t.config.GetSetting(rsExchangeType)
+	responseUser := t.config.GetSetting(rsUser)
+	responsePassword := t.config.GetSetting(rsPassword)
+	responseReliable, err := data.CoerceToBoolean(t.config.Settings[rsReliable])
+	if err != nil {
+		log.Error("Error converting \"Reliable\" to a boolean ", err.Error())
+		return err
+	}
+	responseDurable, err := data.CoerceToBoolean(t.config.Settings[rsDurable])
+	if err != nil {
+		log.Error("Error converting \"Durable\" to a boolean ", err.Error())
+		return err
+	}
+	responseAutoDelete, err := data.CoerceToBoolean(t.config.Settings[rsAutoDelete])
+	if err != nil {
+		log.Error("Error converting \"AutoDelete\" to a boolean ", err.Error())
+		return err
+	}
+	log.Info(responseHostName, responsePort, responseExchangeName, responseExchangeType, responseUser, responsePassword, responseReliable, responseDurable, responseAutoDelete)
 	//
 	//	Create the exchange object
 	//
-	exch := AMQPExchangeNew(hostName, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
+	exch := AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
 	if exch == nil {
 		errMsg := fmt.Sprintf("Unable to Create Exchange Object: %s", exch.ExchangeName)
 		log.Error(errMsg)
@@ -170,8 +205,6 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 		log.Error("Error starting action: ", err.Error())
 	}
 
-	log.Infof("Ran Handler: [%s], Results: %s", handler, results["data"])
-
 	var replyData interface{}
 
 	if len(results) != 0 {
@@ -180,7 +213,6 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 			replyData = dataAttr.Value()
 		}
 	}
-	log.Infof("ReplyData: %s", replyData)
 	if replyData != nil {
 		dataJson, err := json.Marshal(replyData)
 		if err != nil {

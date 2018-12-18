@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"sync"
-	"strconv"
 
 	"github.com/streadway/amqp"
 )
@@ -34,40 +33,25 @@ type AMQPExchange struct {
 	Confirms     chan amqp.Confirmation
 	IsOpen       bool
 }
-// AMQPConfiguration main AMQP Connection configuration
-type AMQPConfiguration struct {
-	UriPrefix 	string 	// Broker access URI prefix
-	Port		int64	// broker port
-}
+
 var (
 	msgs     amqp.Delivery
 	msgsLock sync.Mutex
 	conf 	 AMQPConfiguration
 )
-// AMQPInit AMPQ intializer
-func AMQPInit (prefix string, port string) error {
-	conf.UriPrefix = prefix
-	var err error
-	conf.Port, err = strconv.ParseInt(port, 10, 64)
-	return err
-}
-//
 //
 // AMQPExchangeNew creates a new exchange in the Broker
-func AMQPExchangeNew (hostName string, exchangeName string, exchangeType string, queueName string, routingKey string,
+func AMQPExchangeNew (hostName string,port int, exchangeName string, exchangeType string, queueName string, routingKey string,
 	userName string, password string, durable bool, autoDelete bool, reliable bool) *AMQPExchange {
-	if conf.UriPrefix == "" {
-		return nil // broker has not been initialized
-	}
-	uri := buildURI(hostName, userName, password)
+	uri := buildURI(hostName, port, userName, password)
 	exch := AMQPExchange{uri, hostName, exchangeName, exchangeType, queueName, routingKey, userName, password, durable, autoDelete, reliable, nil, nil, nil, []string{}, nil, false}
 	return &exch
 }
 
 // buildURI creates the full broker URI string
-func buildURI(hostName string, userName string, password string) string {
+func buildURI(hostName string, port int, userName string, password string) string {
 	// "amqp://" + userName + ":" + password + "@" + hostName + ":5672"
-	return fmt.Sprintf("%s%s:%s@%s:%d", conf.UriPrefix, userName, password, hostName, conf.Port)
+	return fmt.Sprintf("%s%s:%s@%s:%d", "amqp://", userName, password, hostName, port)
 }
 
 // Open opens a previosly created Exchange
