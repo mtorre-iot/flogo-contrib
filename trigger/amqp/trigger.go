@@ -135,7 +135,6 @@ func (t *AmqpTrigger) Start() error {
 		log.Error("Response Exchange: Error converting \"AutoDelete\" to a boolean ", err.Error())
 		return err
 	}
-	log.Info(responseHostName, responsePort, responseExchangeName, responseExchangeType, responseUser, responsePassword, responseReliable, responseDurable, responseAutoDelete)
 	//
 	//	Create the request exchange object
 	//
@@ -207,7 +206,7 @@ func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 		if found {
 			t.RunHandler(handler, payload)
 		} else {
-			log.Errorf("handler for topic '%s' not found", topic)
+			log.Warnf("handler for topic '%s' not found", topic)
 		}
 	}
 }
