@@ -237,8 +237,10 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 
 	results, err := handler.Handle(context.Background(), trgData)
 	
+	log.Infof("Error %s", err)
+	 
 	for res := range results {
-		log.Infof("Results: %v", results[res])
+		log.Infof("Results: %v", res)
 	}
 
 	if err != nil {
