@@ -17,18 +17,18 @@ import (
 // log is the default package logger
 var (
 	log            = logger.GetLogger("trigger-flogo-amqp")
-	ivHostName     = "hostName"
-	ivPort         = "port"
-	ivExchangeName = "exchangeName"
-	ivQueueName    = "queueName"
-	ivExchangeType = "exchangeType"
-	ivRoutingKey   = "routingKey"
-	ivTopic        = "topic"
-	ivDurable      = "durable"
-	ivAutoDelete   = "autoDelete"
-	ivReliable     = "reliable"
-	ivUser         = "user"
-	ivPassword     = "password"
+	rqHostName     = "requestHostName"
+	rqPort         = "requestPort"
+	rqExchangeName = "requestExchangeName"
+	rqQueueName    = "requestQueueName"
+	rqExchangeType = "requestExchangeType"
+	rqRoutingKey   = "requestRoutingKey"
+	rqTopic        = "requestTopic"
+	rqDurable      = "requestDurable"
+	rqAutoDelete   = "requestAutoDelete"
+	rqReliable     = "requestReliable"
+	rqUser         = "requestUser"
+	rqPassword     = "requestPassword"
 	rsHostName     = "responsehostName"
 	rsPort         = "responsePort"
 	rsExchangeName = "responseExchangeName"
@@ -81,29 +81,29 @@ func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
 // Start implements trigger.Trigger.Start
 func (t *AmqpTrigger) Start() error {
 	//
-	hostName := t.config.GetSetting(ivHostName)
-	port, err := strconv.Atoi(t.config.GetSetting(ivPort))
+	requestHostName := t.config.GetSetting(rqHostName)
+	requestPort, err := strconv.Atoi(t.config.GetSetting(rqPort))
 	if err != nil {
 		log.Error("Request Exchange: Error converting \"Port\" to an integer ", err.Error())
 		return err
 	}
-	exchangeName := t.config.GetSetting(ivExchangeName)
-	queueName := t.config.GetSetting(ivQueueName)
-	exchangeType := t.config.GetSetting(ivExchangeType)
-	routingKey := t.config.GetSetting(ivRoutingKey)
-	user := t.config.GetSetting(ivUser)
-	password := t.config.GetSetting(ivPassword)
-	reliable, err := data.CoerceToBoolean(t.config.Settings[ivReliable])
+	requestExchangeName := t.config.GetSetting(rqExchangeName)
+	requestQueueName := t.config.GetSetting(rqQueueName)
+	requestExchangeType := t.config.GetSetting(rqExchangeType)
+	requestRoutingKey := t.config.GetSetting(rqRoutingKey)
+	requestUser := t.config.GetSetting(rqUser)
+	requestPassword := t.config.GetSetting(rqPassword)
+	requestReliable, err := data.CoerceToBoolean(t.config.Settings[rqReliable])
 	if err != nil {
 		log.Error("Request Exchange: Error converting \"Reliable\" to a boolean ", err.Error())
 		return err
 	}
-	durable, err := data.CoerceToBoolean(t.config.Settings[ivDurable])
+	requestDurable, err := data.CoerceToBoolean(t.config.Settings[rqDurable])
 	if err != nil {
 		log.Error("Request Exchange: Error converting \"Durable\" to a boolean ", err.Error())
 		return err
 	}
-	autoDelete, err := data.CoerceToBoolean(t.config.Settings[ivAutoDelete])
+	requestAutoDelete, err := data.CoerceToBoolean(t.config.Settings[rqAutoDelete])
 	if err != nil {
 		log.Error("Request Exchange: Error converting \"AutoDelete\" to a boolean ", err.Error())
 		return err
@@ -138,7 +138,18 @@ func (t *AmqpTrigger) Start() error {
 	//
 	//	Create the request exchange object
 	//
-	t.reqExch = AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
+	t.reqExch = AMQPExchangeNew(requestHostName,
+		requestPort,
+		requestExchangeName,
+		requestExchangeType,
+		requestQueueName,
+		requestRoutingKey,
+		requestUser,
+		requestPassword,
+		requestDurable,
+		requestAutoDelete,
+		requestReliable)
+
 	if t.reqExch == nil {
 		errMsg := fmt.Sprintf("Request Exchange: Unable to Create Exchange Object: %s", t.reqExch.ExchangeName)
 		log.Error(errMsg)
@@ -200,7 +211,7 @@ func (t *AmqpTrigger) Start() error {
 func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		payload := fmt.Sprintf("%s", d.Body)
-		log.Infof("Message received: %s", payload)
+		log.Debugf("Message received: %s", payload)
 		topic := fmt.Sprintf("%s", d.RoutingKey)
 		handler, found := t.topicToHandler[topic]
 		if found {
@@ -238,7 +249,6 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 			replyData = dataAttr.Value()
 		}
 	}
-	replyData = "OK"
 	if replyData != nil {
 		dataJson, err := json.Marshal(replyData)
 		if err != nil {
