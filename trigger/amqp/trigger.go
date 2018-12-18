@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"time"
 
 	"github.com/TIBCOSoftware/flogo-lib/core/data"
 	"github.com/TIBCOSoftware/flogo-lib/core/trigger"
@@ -220,6 +219,7 @@ func receiverHandler(msgs <-chan amqp.Delivery) {
 func (t *AmqpTrigger) Stop() error {
 	//Close Exchange
 	reqExch.Close()
+	resExch.Close()
 	return nil
 }
 
@@ -242,6 +242,7 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 			replyData = dataAttr.Value()
 		}
 	}
+	replyData = "OK"
 	if replyData != nil {
 		dataJson, err := json.Marshal(replyData)
 		if err != nil {
@@ -257,23 +258,17 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 
 func (t *AmqpTrigger) publishMessage(topic string, message string) {
 
-	log.Debug("ReplyTo topic: ", topic)
-	log.Debug("Publishing message: ", message)
+	log.Info("ReplyTo topic: ", topic)
+	log.Info("Publishing message: ", message)
 
-	qos, err := strconv.Atoi(t.config.GetSetting("qos"))
-	if err != nil {
-		log.Error("Error converting \"qos\" to an integer ", err.Error())
-		return
-	}
 	if len(topic) == 0 {
 		log.Warn("Invalid empty topic to publish to")
 		return
 	}
-	token := t.client.Publish(topic, byte(qos), false, message)
-	sent := token.WaitTimeout(5000 * time.Millisecond)
-	if !sent {
+	err := resExch.Publish(message)
+	if err != nil {
 		// Timeout occurred
-		log.Errorf("Timeout occurred while trying to publish to topic '%s'", topic)
+		log.Errorf("Error occurred while trying to publish to Exchange '%s'", resExch.ExchangeName)
 		return
 	}
 }
