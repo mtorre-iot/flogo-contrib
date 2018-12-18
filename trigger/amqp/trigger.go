@@ -142,7 +142,7 @@ func (t *AmqpTrigger) Start() error {
 	//
 	//	Create the request exchange object
 	//
-	reqExch := AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
+	reqExch = AMQPExchangeNew(hostName, port, exchangeName, exchangeType, queueName, routingKey, user, password, durable, autoDelete, reliable)
 	if reqExch == nil {
 		errMsg := fmt.Sprintf("Request Exchange: Unable to Create Exchange Object: %s", reqExch.ExchangeName)
 		log.Error(errMsg)
