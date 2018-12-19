@@ -40,9 +40,10 @@ var (
 	rsDurable      = "responseDurable"
 	rsAutoDelete   = "responseAutoDelete"
 	rsReliable     = "responseReliable"
-	msgs     amqp.Delivery
-	msgsLock sync.Mutex
+	msgs           amqp.Delivery
+	msgsLock       sync.Mutex
 )
+
 //
 // AMQPExchange contains all parameters required to create or open an exchenge
 //
@@ -65,6 +66,7 @@ type AMQPExchange struct {
 	Confirms     chan amqp.Confirmation
 	IsOpen       bool
 }
+
 //
 // AmqpTrigger is simple AMQP trigger
 type AmqpTrigger struct {
@@ -259,12 +261,14 @@ func (t *AmqpTrigger) Stop() error {
 func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 	trgData := make(map[string]interface{})
 	trgData["message"] = payload
-	
+
 	results, err := handler.Handle(context.Background(), trgData)
 
 	if err != nil {
 		log.Error("Error starting action: ", err.Error())
 	}
+
+	log.Infof("data: %s", results["data"])
 
 	var replyData interface{}
 
@@ -303,6 +307,7 @@ func (t *AmqpTrigger) publishMessage(topic string, message string) {
 		return
 	}
 }
+
 //
 // AMQPExchangeNew creates a new exchange in the Broker
 func AMQPExchangeNew(hostName string, port int, exchangeName string, exchangeType string, queueName string, routingKey string,
