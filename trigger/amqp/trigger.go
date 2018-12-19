@@ -268,8 +268,6 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 		log.Error("Error starting action: ", err.Error())
 	}
 
-	log.Infof("data: %s", results["data"])
-
 	var replyData interface{}
 
 	if len(results) != 0 {
@@ -283,23 +281,15 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 		if err != nil {
 			log.Error(err)
 		} else {
-			replyTo := handler.GetStringSetting("topic")
-			if replyTo != "" {
-				t.publishMessage(replyTo, string(dataJson))
-			}
+			t.publishMessage(string(dataJson))
 		}
 	}
 }
 
-func (t *AmqpTrigger) publishMessage(topic string, message string) {
+func (t *AmqpTrigger) publishMessage(message string) {
 
-	log.Info("ReplyTo topic: ", topic)
-	log.Info("Publishing message: ", message)
+	log.Info("Replying message: ", message)
 
-	if len(topic) == 0 {
-		log.Warn("Invalid empty topic to publish to")
-		return
-	}
 	err := t.resExch.Publish(message)
 	if err != nil {
 		// Timeout occurred
