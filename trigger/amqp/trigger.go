@@ -30,7 +30,7 @@ var (
 	rqReliable     = "requestReliable"
 	rqUser         = "requestUser"
 	rqPassword     = "requestPassword"
-	rsHostName     = "responsehostName"
+	rsHostName     = "responseHostName"
 	rsPort         = "responsePort"
 	rsExchangeName = "responseExchangeName"
 	rsExchangeType = "responseExchangeType"
@@ -260,8 +260,6 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 	trgData := make(map[string]interface{})
 	trgData["message"] = payload
 	
-	fmt.Println("map:", trgData)
-
 	results, err := handler.Handle(context.Background(), trgData)
 
 	if err != nil {
