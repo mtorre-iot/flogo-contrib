@@ -117,7 +117,8 @@
   "output": [
     {
       "name": "message",
-      "type": "string"
+      "type": "string",
+      "required": true
     }
   ],
   "reply": [
@@ -130,7 +131,8 @@
     "settings": [
       {
         "name": "topic",
-        "type": "string"
+        "type": "string",
+        "required": true
       }
     ]
   }
