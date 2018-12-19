@@ -22,14 +22,27 @@ func getTestJsonMetadata() string {
 const testConfig string = `{
   "name": "flogo-amqp",
   "settings": {
-    "topic": "flogo/#",
-    "broker": "tcp://127.0.0.1:1883",
-    "id": "flogoEngine",
-    "user": "",
-    "password": "",
-    "store": "",
-    "qos": "0",
-    "cleansess": "false"
+	"requestHostName": "localhost",
+	"requestPort" : "5672",
+    "requestExchangeName": "AMQPExchange",
+	"requestQueueName" : "AMQPQueue1",
+    "requestExchangeType": "topic",
+    "requestRoutingKey": "#",
+    "requestUser": "guest",
+    "requestPassword": "guest",
+	"requestDurable" : "false",
+	"requestAutoDelete" : "true",
+    "requestReliable": "false",
+	"responsehostName" : "localhost",
+	"responsePort" : "5672",
+	"responseExchangeName" : "AMQPResponseExchange",
+	"responseExchangeType" : "topic",
+    "responseRoutingKey": "#",
+	"responseUser" : "guest",
+	"responsePassword" : "guest",
+	"responseDurable" : "false",
+	"responseAutoDelete" : "true",
+	"responseReliable" : "true"
   },
   "handlers": [
     {
@@ -58,7 +71,7 @@ const testConfig string = `{
 func TestInit(t *testing.T) {
 
 	// New  factory
-	md := trigger.NewMetadata(jsonMetadata)
+	md := trigger.NewMetadata(jsonTestMetadata)
 	f := NewFactory(md)
 
 	// New Trigger
