@@ -117,8 +117,7 @@
   "output": [
     {
       "name": "message",
-      "type": "string",
-      "required": true
+      "type": "string"
     }
   ],
   "reply": [
