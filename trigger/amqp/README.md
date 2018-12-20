@@ -154,9 +154,9 @@ Configure the Trigger to start "myflow". "settings" "topic" is the topic it uses
 {
   "triggers": [
     {
-      "id": "receive_amqp_message_2",
+      "id": "receive_amqp_message",
       "ref": "github.com/mtorre-iot/flogo-contrib/trigger/amqp",
-      "name": "Receive AMQP Message (2)",
+      "name": "Receive AMQP Message",
       "description": "Simple AMQP Trigger",
       "settings": {
         "requestHostName": "localhost",
