@@ -122,17 +122,17 @@ func (t *AmqpTrigger) Start() error {
 	requestPassword := t.config.GetSetting(rqPassword)
 	requestReliable, err := data.CoerceToBoolean(t.config.Settings[rqReliable])
 	if err != nil {
-		log.Warn("Request Exchange: Error converting \"Reliable\" to a boolean. Assuming default (false).")
+		log.Debug("Request Exchange: Error converting \"Reliable\" to a boolean. Assuming default (false).")
 		requestReliable = false
 	}
 	requestDurable, err := data.CoerceToBoolean(t.config.Settings[rqDurable])
 	if err != nil {
-		log.Warn("Request Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
+		log.Debug("Request Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		requestDurable = false
 	}
 	requestAutoDelete, err := data.CoerceToBoolean(t.config.Settings[rqAutoDelete])
 	if err != nil {
-		log.Warn("Request Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
+		log.Debug("Request Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
 		requestAutoDelete = true
 	}
 
@@ -149,17 +149,17 @@ func (t *AmqpTrigger) Start() error {
 	responsePassword := t.config.GetSetting(rsPassword)
 	responseReliable, err := data.CoerceToBoolean(t.config.Settings[rsReliable])
 	if err != nil {
-		log.Warn("Response Exchange: Error converting \"Reliable\" to a boolean. Assuming default (true).")
+		log.Debug("Response Exchange: Error converting \"Reliable\" to a boolean. Assuming default (true).")
 		responseReliable = true
 	}
 	responseDurable, err := data.CoerceToBoolean(t.config.Settings[rsDurable])
 	if err != nil {
-		log.Warn("Response Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
+		log.Debug("Response Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		responseDurable = false
 	}
 	responseAutoDelete, err := data.CoerceToBoolean(t.config.Settings[rsAutoDelete])
 	if err != nil {
-		log.Warn("Response Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
+		log.Debug("Response Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
 		responseAutoDelete = true
 	}
 	//
