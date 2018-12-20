@@ -51,17 +51,17 @@
     {
       "name": "requestDurable",
       "type": "string",
-      "required": true
+      "required": false
     },
     {
       "name": "requestAutoDelete",
       "type": "string",
-      "required": true
+      "required": false
     },
     {
       "name": "requestReliable",
       "type": "string",
-      "required": true
+      "required": false
     },
     {
       "name": "responseHostName",
