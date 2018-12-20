@@ -1,6 +1,6 @@
 ---
 title: AMQP
-weight: ????
+weight: 15709
 ---
 # amqp
 This trigger provides your flogo application the ability to start a flow via AMQP
