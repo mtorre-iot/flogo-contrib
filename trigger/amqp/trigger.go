@@ -11,7 +11,6 @@ import (
 	"github.com/TIBCOSoftware/flogo-lib/core/data"
 	"github.com/TIBCOSoftware/flogo-lib/core/trigger"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
-	"github.com/eclipse/paho.mqtt.golang"
 	"github.com/streadway/amqp"
 )
 
@@ -21,7 +20,6 @@ var (
 	rqHostName     = "requestHostName"
 	rqPort         = "requestPort"
 	rqExchangeName = "requestExchangeName"
-	rqQueueName    = "requestQueueName"
 	rqExchangeType = "requestExchangeType"
 	rqRoutingKey   = "requestRoutingKey"
 	rqTopic        = "requestTopic"
@@ -71,7 +69,6 @@ type AMQPExchange struct {
 // AmqpTrigger is simple AMQP trigger
 type AmqpTrigger struct {
 	metadata       *trigger.Metadata
-	client         mqtt.Client
 	config         *trigger.Config
 	handlers       []*trigger.Handler
 	topicToHandler map[string]*trigger.Handler
@@ -138,11 +135,9 @@ func (t *AmqpTrigger) Start() error {
 	if  err != nil {
 		return err
 	}
-	requestQueueName, err := t.checkParameter(rqQueueName);
-	if err != nil {
-		return err
-	}
-	requestExchangeType, err := t.checkParameter(rqExchangeType);
+	requestQueueName := t.config.Id
+
+	requestExchangeType, err := t.checkParameter(rqExchangeType)
 	if err != nil {
 		return err
 	}
@@ -176,7 +171,7 @@ func (t *AmqpTrigger) Start() error {
 		log.Warn("Request Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		requestDurable = false
 	}
-	requestAutoDeleteStr, err := t.checkParameter(rqAutoDelete); 
+	requestAutoDeleteStr, err := t.checkParameter(rqAutoDelete)
 	if err != nil {
 		requestAutoDeleteStr = "true"
 	}
