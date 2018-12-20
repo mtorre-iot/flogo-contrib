@@ -9,7 +9,7 @@ This trigger provides your flogo application the ability to start a flow via AMQ
 ## Installation
 
 ```bash
-flogo install github.com/mtorre-iot/flogo-contrib/trigger/amqp
+flogo install https://github.com/mtorre-iot/flogo-contrib/trigger/amqp
 ```
 
 ## Schema
@@ -18,47 +18,128 @@ Settings, Outputs and Endpoint:
 ```json
 {
   "settings":[
-      {
-        "name": "broker",
-        "type": "string"
-      },
-      {
-        "name": "id",
-        "type": "string"
-      },
-      {
-        "name": "user",
-        "type": "string"
-      },
-      {
-        "name": "password",
-        "type": "string"
-      },
-      {
-        "name": "store",
-        "type": "string"
-      },
+    {
+      "name": "requestHostName",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestPort",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestExchangeName",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestExchangeType",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestRoutingKey",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestUser",
+      "type": "string",
+      "required": true
+    },    
+    {
+      "name": "requestPassword",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "requestDurable",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "requestAutoDelete",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "requestReliable",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseHostName",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responsePort",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseExchangeName",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseExchangeType",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseRoutingKey",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseUser",
+      "type": "string",
+      "required": false
+    },    
+    {
+      "name": "responsePassword",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseDurable",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseAutoDelete",
+      "type": "string",
+      "required": false
+    },
+    {
+      "name": "responseReliable",
+      "type": "string",
+      "required": false
+    }
+  ],
+  "output": [
+    {
+      "name": "message",
+      "type": "string"
+    }
+  ],
+  "reply": [
+    {
+      "name": "data",
+      "type": "object"
+    }
+  ],
+  "handler": {
+    "settings": [
       {
         "name": "topic",
-        "type": "string"
-      },
-      {
-        "name": "qos",
-        "type": "number"
-      },
-      {
-        "name": "cleansess",
-        "type": "boolean"
+        "type": "string",
+        "required": true
       }
-    ],
-    "endpoint": {
-      "settings": [
-        {
-          "name": "topic",
-          "type": "string"
-        }
-      ]
-    }
+    ]
+  }
 }
 ```
 
