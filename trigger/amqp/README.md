@@ -154,23 +154,45 @@ Configure the Trigger to start "myflow". "settings" "topic" is the topic it uses
 {
   "triggers": [
     {
-      "name": "flogo-amqp",
+      "id": "receive_amqp_message_2",
+      "ref": "github.com/mtorre-iot/flogo-contrib/trigger/amqp",
+      "name": "Receive AMQP Message (2)",
+      "description": "Simple AMQP Trigger",
       "settings": {
-        "topic": "flogo/#",
-        "broker": "tcp://192.168.1.12:1883",
-        "id": "flogo",
-        "user": "",
-        "password": "",
-        "store": "",
-        "qos": "0",
-        "cleansess": "false"
+        "requestHostName": "localhost",
+        "requestPort": "5672",
+        "requestExchangeName": "AMQPRequestExchange",
+        "requestExchangeType": "topic",
+        "requestRoutingKey": "#",
+        "requestUser": "guest",
+        "requestPassword": "guest",
+        "responseHostName": "localhost",
+        "responsePort": "5672",
+        "responseExchangeName": "AMQPResponseExchange",
+        "responseExchangeType": "topic",
+        "responseRoutingKey": "#",
+        "responseUser": "guest",
+        "responsePassword": "guest"
       },
-      "endpoints": [
+      "handlers": [
         {
-          "actionType": "flow",
-          "actionURI": "embedded://myflow",
+          "action": {
+            "ref": "github.com/TIBCOSoftware/flogo-contrib/action/flow",
+            "data": {
+              "flowURI": "res://flow:amqp_application_test"
+            },
+            "mappings": {
+              "input": [
+                {
+                  "mapTo": "message",
+                  "type": "assign",
+                  "value": "$.message"
+                }
+              ]
+            }
+          },
           "settings": {
-            "topic": "test_start"
+            "topic": "update"
           }
         }
       ]
