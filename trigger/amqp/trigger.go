@@ -104,35 +104,85 @@ func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
 	t.handlers = ctx.GetHandlers()
 	return nil
 }
+func (t *AmqpTrigger) checkParameter(attribute string) (string, error) {
+	param := t.config.GetSetting(attribute)
+	if param == "" {
+		errMsg := fmt.Sprintf("Setting '%s' not found.", attribute) 
+		return param, errors.New(errMsg)
+	}
+	return param, nil
+}
 
 // Start implements trigger.Trigger.Start
 func (t *AmqpTrigger) Start() error {
 	//
-	requestHostName := t.config.GetSetting(rqHostName)
-	requestPort, err := strconv.Atoi(t.config.GetSetting(rqPort))
+	if t.config.Settings == nil {
+		errMsg := fmt.Sprintf("No Settings found for trigger '%s'", t.config.Id) 
+		log.Error(errMsg)
+		return errors.New(errMsg)
+	}
+	requestHostName, err := t.checkParameter(rqHostName)
+	if err != nil {
+		return err
+	}
+	requestPortStr, err := t.checkParameter(rqPort)
+	if err != nil {
+		return err
+	}
+	requestPort, err := strconv.Atoi(requestPortStr)
 	if err != nil {
 		log.Error("Request Exchange: Error converting \"Port\" to an integer ", err.Error())
 		return err
 	}
-	requestExchangeName := t.config.GetSetting(rqExchangeName)
-	requestQueueName := t.config.GetSetting(rqQueueName)
-	requestExchangeType := t.config.GetSetting(rqExchangeType)
-	requestRoutingKey := t.config.GetSetting(rqRoutingKey)
-	requestUser := t.config.GetSetting(rqUser)
-	requestPassword := t.config.GetSetting(rqPassword)
-	requestReliable, err := data.CoerceToBoolean(t.config.Settings[rqReliable])
+	requestExchangeName, err:= t.checkParameter(rqExchangeName)
+	if  err != nil {
+		return err
+	}
+	requestQueueName, err := t.checkParameter(rqQueueName);
 	if err != nil {
-		log.Debug("Request Exchange: Error converting \"Reliable\" to a boolean. Assuming default (false).")
+		return err
+	}
+	requestExchangeType, err := t.checkParameter(rqExchangeType);
+	if err != nil {
+		return err
+	}
+	requestRoutingKey, err := t.checkParameter(rqRoutingKey)
+	if err != nil {
+		return err
+	}
+	requestUser, err := t.checkParameter(rqUser);
+	if err != nil {
+		return err
+	}
+	requestPassword, err := t.checkParameter(rqPassword)
+	if err != nil {
+		return err
+	}
+	requestReliableStr, err := t.checkParameter(rqReliable);
+	if err != nil {
+		requestReliableStr = "false"
+	}
+	requestReliable, err := data.CoerceToBoolean(requestReliableStr)
+	if err != nil {
+		log.Warn("Request Exchange: Error converting \"Reliable\" to a boolean. Assuming default (false).")
 		requestReliable = false
 	}
-	requestDurable, err := data.CoerceToBoolean(t.config.Settings[rqDurable])
+	requestDurableStr, err := t.checkParameter(rqDurable)
 	if err != nil {
-		log.Debug("Request Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
+		requestDurableStr = "false"
+	}
+	requestDurable, err := data.CoerceToBoolean(requestDurableStr)
+	if err != nil {
+		log.Warn("Request Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		requestDurable = false
 	}
-	requestAutoDelete, err := data.CoerceToBoolean(t.config.Settings[rqAutoDelete])
+	requestAutoDeleteStr, err := t.checkParameter(rqAutoDelete); 
 	if err != nil {
-		log.Debug("Request Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
+		requestAutoDeleteStr = "true"
+	}
+	requestAutoDelete, err := data.CoerceToBoolean(requestAutoDeleteStr)
+	if err != nil {
+		log.Warn("Request Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
 		requestAutoDelete = true
 	}
 
@@ -147,17 +197,30 @@ func (t *AmqpTrigger) Start() error {
 	responseRoutingKey := t.config.GetSetting(rsRoutingKey)
 	responseUser := t.config.GetSetting(rsUser)
 	responsePassword := t.config.GetSetting(rsPassword)
-	responseReliable, err := data.CoerceToBoolean(t.config.Settings[rsReliable])
+
+	responseReliableStr, err := t.checkParameter(rsReliable) 
+	if err != nil {
+		responseReliableStr = "true"
+	}
+	responseReliable, err := data.CoerceToBoolean(responseReliableStr)
 	if err != nil {
 		log.Debug("Response Exchange: Error converting \"Reliable\" to a boolean. Assuming default (true).")
 		responseReliable = true
 	}
-	responseDurable, err := data.CoerceToBoolean(t.config.Settings[rsDurable])
+	responseDurableStr, err := t.checkParameter(rqDurable)
+	if err != nil {
+		responseDurableStr = "false"
+	}
+	responseDurable, err := data.CoerceToBoolean(responseDurableStr)
 	if err != nil {
 		log.Debug("Response Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		responseDurable = false
 	}
-	responseAutoDelete, err := data.CoerceToBoolean(t.config.Settings[rsAutoDelete])
+	responseAutoDeleteStr, err := t.checkParameter(rsAutoDelete)
+	if err != nil {
+		responseAutoDeleteStr = "true"
+	}
+	responseAutoDelete, err := data.CoerceToBoolean(responseAutoDeleteStr)
 	if err != nil {
 		log.Debug("Response Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
 		responseAutoDelete = true
