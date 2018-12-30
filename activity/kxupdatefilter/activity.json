@@ -5,7 +5,7 @@
   "version": "0.0.1",
   "title": "KNOX Update message filter",
   "description": "KNOX Update message Decoder and filter",
-  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/ctivity/kxupdatefilter",
+  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxupdatefilter",
   "input":[
     {
       "name": "message",
