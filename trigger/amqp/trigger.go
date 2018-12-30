@@ -181,11 +181,16 @@ func (t *AmqpTrigger) Start() error {
 		requestAutoDelete = true
 	}
 
+	// Response configuration is optional
+
 	responseHostName := t.config.GetSetting(rsHostName)
-	responsePort, err := strconv.Atoi(t.config.GetSetting(rsPort))
-	if err != nil {
-		log.Error("Response Exchange: Error converting \"Port\" to an integer ", err.Error())
-		return err
+	responsePortStr := t.config.GetSetting(rsPort)
+	if (responsePortStr != "") {
+		responsePort, err := strconv.Atoi(responsePortStr)
+		if err != nil {
+			log.Error("Response Exchange: Error converting \"Port\" to an integer ", err.Error())
+			return err
+		}
 	}
 	responseExchangeName := t.config.GetSetting(rsExchangeName)
 	responseExchangeType := t.config.GetSetting(rsExchangeType)
