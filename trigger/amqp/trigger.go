@@ -185,8 +185,9 @@ func (t *AmqpTrigger) Start() error {
 
 	responseHostName := t.config.GetSetting(rsHostName)
 	responsePortStr := t.config.GetSetting(rsPort)
+	responsePort := 5672
 	if (responsePortStr != "") {
-		responsePort, err := strconv.Atoi(responsePortStr)
+		responsePort, err = strconv.Atoi(responsePortStr)
 		if err != nil {
 			log.Error("Response Exchange: Error converting \"Port\" to an integer ", err.Error())
 			return err
