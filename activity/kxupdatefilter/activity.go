@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"errors"
 	"time"
-	"strconv"
-	"encoding/json"
+	//"strconv"
+	//"encoding/json"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
@@ -46,11 +46,11 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 	//mv := context.GetInput(ivMessage)
 	message, _ := context.GetInput(ivMessage).(string)
-	addToFlow, _ := toBool(context.GetInput(ivAddToFlow))
+	addToFlow, _ := kxupdatefilter.toBool(context.GetInput(ivAddToFlow))
 	//
 	// decode it from Json
 	//
-	decodedMessage := DecodeUpdateMessage(message)
+	decodedMessage := kxupdatefilter.DecodeUpdateMessage(message)
 	if (decodedMessage == nil) {
 		return false, errors.New("Incoming message could not be deserialized. Message: " + message)
 	}
@@ -100,6 +100,7 @@ func GetQualityFromString(qualityStr string) (Quality, error) {
 		}
 	return rtn, nil
 }
+/*
 // KXRTPObject configuration structure for Physical Objects
 type KXRTPObject struct {
 	ID int
@@ -121,6 +122,7 @@ type RtAvg struct {
 	Average float64
 	Variance float64
 }
+
 
 // DecodeUpdateMessage get messages coming from a KXDataProc
 func DecodeUpdateMessage (message string) []KXRTPObject {
@@ -151,4 +153,4 @@ func toBool(val interface{}) (bool, error) {
 		}
 	}
 	return b, nil
-}
+} */
