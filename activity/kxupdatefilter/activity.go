@@ -47,8 +47,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//mv := context.GetInput(ivMessage)
 	message, _ := context.GetInput(ivMessage).(string)
 	addToFlow, _ := toBool(context.GetInput(ivAddToFlow))
-
-	activityLog.Info(fmt.Sprintf("Message: %s", message))
 	//
 	// decode it from Json
 	//
@@ -59,7 +57,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//
 	// test - print the tags
 	//
-	activityLog.Info(fmt.Sprintf("Number of objects: %d", len(decodedMessage) ))
 	for _, rtPObject := range decodedMessage {
 		activityLog.Info(fmt.Sprintf("Tag: %s", rtPObject.Tag))
 	}
