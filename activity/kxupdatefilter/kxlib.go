@@ -96,3 +96,16 @@ func GetQualityFromString(qualityStr string) (Quality, error) {
 		}
 	return rtn, nil
 }
+
+// Serialize - convert a RTKXPObject to Json
+func (rtpObject * KXRTPObject) Serialize() (string, error) {
+	rtn, err := json.Marshal(rtpObject)
+	return string(rtn), err
+}
+
+// Deserialize - attempt to convert a Json to RTKXPObject  
+func (rtpObject * KXRTPObject) Deserialize(jsonInput string) error {
+	bArray := []byte(jsonInput)
+	err := json.Unmarshal(bArray, rtpObject)
+	return err
+}
