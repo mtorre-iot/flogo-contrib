@@ -68,7 +68,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//
 	foundTrig:= false
 	for _, rtPObject := range decodedMessage {
-		activityLog.Info(fmt.Sprintf("Tag: %s", rtPObject.Tag))
 		// 
 		// Check if any of the received tags is the associated trigger
 		//
