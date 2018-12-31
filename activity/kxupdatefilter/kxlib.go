@@ -3,7 +3,6 @@ package kxupdatefilter
 import (
 	"fmt"
 	"time"
-	"encoding/json"
 	"errors"
 	"strconv"
 )
@@ -64,18 +63,6 @@ type RtVal struct {
 type RtAvg struct {
 	Average float64
 	Variance float64
-}
-
-// DecodeUpdateMessage get messages coming from a KXDataProc
-func DecodeUpdateMessage (message string) []KXRTPObject {
-
-	rtn := make([]KXRTPObject, 0)
-	var updateMessage []KXRTPObject 
-	// decode message
-	if err := json.Unmarshal([]byte(message), &updateMessage); err != nil {
-		return nil
-	}
-	return rtn
 }
 
 func toBool(val interface{}) (bool, error) {

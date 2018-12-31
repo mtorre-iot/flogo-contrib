@@ -3,6 +3,7 @@ package kxupdatefilter
 import (
 	"fmt"
 	"errors"
+	"encoding/json"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
@@ -62,4 +63,17 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		context.SetOutput(ovMessage, message)
 	}
 	return true, nil
+}
+
+
+// DecodeUpdateMessage get messages coming from a KXDataProc
+func DecodeUpdateMessage (message string) []KXRTPObject {
+
+	rtn := make([]KXRTPObject, 0)
+	var updateMessage []KXRTPObject 
+	// decode message
+	if err := json.Unmarshal([]byte(message), &updateMessage); err != nil {
+		return nil
+	}
+	return rtn
 }
