@@ -14,9 +14,24 @@
       "value": ""
     },
     {
-      "name": "addToFlow",
-      "type": "boolean",
-      "value": false
+      "name": "triggerTag",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "inputTag1",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "inputTag2",
+      "type": "string",
+      "value": ""
+    },
+    {
+      "name": "outputTag1",
+      "type": "string",
+      "value": ""
     }
   ],
   "output": [

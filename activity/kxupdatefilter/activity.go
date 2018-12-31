@@ -12,14 +12,12 @@ var activityLog = logger.GetLogger("activity-flogo-kxupdatefilter")
 
 const (
 	ivMessage   = "message"
-	ivAddToFlow = "addToFlow"
 	ivTriggerTag = "triggerTag"
-	ivInputTag1 = "funcInputTag1"
-	ivInputTag2 = "funcInputTag2"
+	ivInputTag1 = "inputTag1"
+	ivInputTag2 = "inputTag2"
 
 	ovMessage = "message"
-	ovOutputTag1 = "funcOutputTag1"
-	ovOutputValue1 = "funcOutputValue1"
+	ovOutputTag1 = "outputTag1"
 )
 
 func init() {
@@ -55,7 +53,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	inputTag1 := i1If.(string)
 	inputTag2 := i2If.(string)
 	//outputTag1 := o1If.(string)
-	addToFlow, _ := ToBool(context.GetInput(ivAddToFlow))
 	var input1Value float64 
 	var input2Value float64
 	var output1Value float64
@@ -123,8 +120,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		output1Value = input1Value + input2Value
 		activityLog.Info(fmt.Sprintf("Result: %f", output1Value))
 	}
-	if addToFlow {
-		context.SetOutput(ovMessage, message)
-	}
+	context.SetOutput(ovMessage, message)
+
 	return true, nil
 }
