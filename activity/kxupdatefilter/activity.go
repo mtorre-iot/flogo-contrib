@@ -54,6 +54,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//
 	decodedMessage := DecodeUpdateMessage(message)
 	if (decodedMessage == nil) {
+		activityLog.Info("Message could not be deserialized!")
 		return false, errors.New("Incoming message could not be deserialized. Message: " + message)
 	}
 	//
