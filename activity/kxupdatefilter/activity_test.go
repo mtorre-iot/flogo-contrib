@@ -43,7 +43,7 @@ func TestEval(t *testing.T) {
 
 	//setup attrs
 	tc.SetInput("message", "test message")
-	tc.SetInput("flowInfo", true)
+	tc.SetInput("addToFlow", true)
 
 	act.Eval(tc)
 }
@@ -55,7 +55,6 @@ func TestAddToFlow(t *testing.T) {
 
 	//setup attrs
 	tc.SetInput("message", "test message")
-	tc.SetInput("flowInfo", true)
 	tc.SetInput("addToFlow", true)
 
 	act.Eval(tc)
