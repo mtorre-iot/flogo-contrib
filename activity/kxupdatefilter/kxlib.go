@@ -2,7 +2,7 @@ package kxupdatefilter
 
 import (
 	"fmt"
-	//"errors"
+	"errors"
 	"time"
 	"strconv"
 	"encoding/json"
@@ -61,3 +61,38 @@ func ToBool(val interface{}) (bool, error) {
 	}
 	return b, nil
 } 
+
+// Quality enum
+type Quality int
+
+const (
+	QualityOk	    	Quality = iota 
+	QualityOld   
+	QualityBad   
+	QualityUnknown
+)
+
+func (quality Quality) String() string {
+    names := [...]string{
+        "OK", 
+        "OLD", 
+        "BAD", 
+        "UNKNOWN"}
+    if quality < QualityOk || quality > QualityUnknown {
+      return "UNKNOWN"
+    }
+    return names[quality]
+}
+
+func GetQualityFromString(qualityStr string) (Quality, error) {
+	qual := map[string]Quality {
+		"OK": QualityOk,
+		"OLD": QualityOld,
+		"BAD": QualityBad,
+		"UNKNOWN": QualityUnknown }
+	rtn, ok := qual[qualityStr]
+	if (ok == false) {
+			return QualityUnknown, errors.New("Quality " + qualityStr + "is unkonwn")
+		}
+	return rtn, nil
+}

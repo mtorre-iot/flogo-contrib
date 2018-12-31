@@ -66,6 +66,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	}
 	return true, nil
 }
+/*
 // Quality enum
 type Quality int
 
@@ -100,7 +101,7 @@ func GetQualityFromString(qualityStr string) (Quality, error) {
 		}
 	return rtn, nil
 }
-/*
+
 // KXRTPObject configuration structure for Physical Objects
 type KXRTPObject struct {
 	ID int
