@@ -4,6 +4,7 @@
   "ref": "github.com/mtorre-iot/flogo-contrib/activity/kxupdatefilter",
   "version": "0.0.1",
   "title": "KNOX Update message filter",
+  "author": "Mario Torre <mtorre.work@gmail.com>",
   "description": "KNOX Update message Decoder and filter",
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxupdatefilter",
   "input":[

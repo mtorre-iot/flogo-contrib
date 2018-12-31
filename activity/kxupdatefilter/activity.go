@@ -47,6 +47,8 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//mv := context.GetInput(ivMessage)
 	message, _ := context.GetInput(ivMessage).(string)
 	addToFlow, _ := toBool(context.GetInput(ivAddToFlow))
+
+	activityLog.Info("Message: " + message)
 	//
 	// decode it from Json
 	//
