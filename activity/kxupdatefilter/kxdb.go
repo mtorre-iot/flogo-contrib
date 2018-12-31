@@ -1,7 +1,7 @@
 package kxupdatefilter
-/* 
+ 
 import (
-	"github.com/tidwall/buntdb"
+	//"github.com/tidwall/buntdb"
 )
 
 var (
@@ -67,4 +67,4 @@ func GetValueFromKey (db *buntdb.DB, key string) (string, error) {
 // CompactDB will make the database file smaller by removing redundant log entries
 func CompactDB(db *buntdb.DB) error {
 	return db.Shrink()
-} */
+} 
