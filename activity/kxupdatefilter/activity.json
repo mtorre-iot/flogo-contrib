@@ -7,29 +7,31 @@
   "author": "Mario Torre <mtorre.work@gmail.com>",
   "description": "KNOX Update message Decoder and filter",
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxupdatefilter",
-  "input":[
-    {
-      "name": "message",
-      "type": "string",
-      "value": ""
-    },
+  "settings": [
     {
       "name": "triggerTag",
       "type": "string",
-      "value": ""
+      "required": true
     },
     {
       "name": "inputTag1",
       "type": "string",
-      "value": ""
+      "required": true
     },
     {
       "name": "inputTag2",
       "type": "string",
-      "value": ""
+      "required": true
     },
     {
       "name": "outputTag1",
+      "type": "string",
+      "required": true
+    }
+  ],
+  "input":[
+    {
+      "name": "message",
       "type": "string",
       "value": ""
     }
