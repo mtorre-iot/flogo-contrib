@@ -45,14 +45,11 @@ func (a *KXUpdateFilterActivity) Metadata() *activity.Metadata {
 func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err error) {
 
 	message, _ := context.GetInput(ivMessage).(string)
-	trIf,_ := context.GetSetting(ivTriggerTag)
-	i1If,_ := context.GetSetting(ivInputTag1)
-	i2If,_ := context.GetSetting(ivInputTag2)
-	//o1If,_ := context.GetSetting(ovOutputTag1)
-	triggerTag := trIf.(string)
-	inputTag1 := i1If.(string)
-	inputTag2 := i2If.(string)
-	//outputTag1 := o1If.(string)
+	triggerTag,_ := context.GetInput(ivTriggerTag).(string)
+	inputTag1,_ := context.GetInput(ivInputTag1).(string)
+	inputTag2,_ := context.GetInput(ivInputTag2).(string)
+	//outputTag1,_ := context.GetSetting(ovOutputTag1).(string)
+
 	var input1Value float64 
 	var input2Value float64
 	var output1Value float64
