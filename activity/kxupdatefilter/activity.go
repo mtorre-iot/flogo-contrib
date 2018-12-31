@@ -5,7 +5,6 @@ import (
 	"errors"
 	"time"
 	"encoding/json"
-	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
@@ -135,25 +134,4 @@ func DecodeUpdateMessage (message string) []KXRTPObject {
 		return nil
 	}
 	return rtn
-}
-
-func toBool(val interface{}) (bool, error) {
-
-	b, ok := val.(bool)
-	if !ok {
-		s, ok := val.(string)
-
-		if !ok {
-			return false, fmt.Errorf("unable to convert to boolean")
-		}
-
-		var err error
-		b, err = strconv.ParseBool(s)
-
-		if err != nil {
-			return false, err
-		}
-	}
-
-	return b, nil
 }
