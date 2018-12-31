@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"errors"
 	//"time"
-	//"strconv"
+	"strconv"
 	//"encoding/json"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
@@ -134,7 +134,7 @@ func DecodeUpdateMessage (message string) []KXRTPObject {
 	}
 	return updateMessage
 }
-
+*/
 func toBool(val interface{}) (bool, error) {
 
 	b, ok := val.(bool)
@@ -153,4 +153,4 @@ func toBool(val interface{}) (bool, error) {
 		}
 	}
 	return b, nil
-} */
+} 
