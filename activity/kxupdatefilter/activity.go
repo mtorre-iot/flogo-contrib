@@ -60,6 +60,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//
 	// test - print the tags
 	//
+	activityLog.Info(fmt.Sprintf("Number of objects: %d", len(decodedMessage) ))
 	for _, rtPObject := range decodedMessage {
 		activityLog.Info(fmt.Sprintf("Tag: %s", rtPObject.Tag))
 	}
