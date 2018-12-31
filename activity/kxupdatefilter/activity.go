@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"errors"
 	//"time"
-	"strconv"
+	//"strconv"
 	//"encoding/json"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
@@ -46,7 +46,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 	//mv := context.GetInput(ivMessage)
 	message, _ := context.GetInput(ivMessage).(string)
-	addToFlow, _ := toBool(context.GetInput(ivAddToFlow))
+	addToFlow, _ := ToBool(context.GetInput(ivAddToFlow))
 	//
 	// decode it from Json
 	//
@@ -135,22 +135,3 @@ func DecodeUpdateMessage (message string) []KXRTPObject {
 	return updateMessage
 }
 */
-func toBool(val interface{}) (bool, error) {
-
-	b, ok := val.(bool)
-	if !ok {
-		s, ok := val.(string)
-
-		if !ok {
-			return false, fmt.Errorf("unable to convert to boolean")
-		}
-
-		var err error
-		b, err = strconv.ParseBool(s)
-
-		if err != nil {
-			return false, err
-		}
-	}
-	return b, nil
-} 
