@@ -3,7 +3,7 @@ package kxupdatefilter
 import (
 	"fmt"
 	"errors"
-	"github.com/tidwall/buntdb"
+	"github.com/mtorre-iot/buntdb"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
