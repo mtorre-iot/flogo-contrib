@@ -3,7 +3,7 @@ package kxupdatefilter
 import (
 	"fmt"
 	"errors"
-	"time"
+	//"time"
 	//"strconv"
 	//"encoding/json"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
@@ -46,11 +46,11 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 	//mv := context.GetInput(ivMessage)
 	message, _ := context.GetInput(ivMessage).(string)
-	addToFlow, _ := kxupdatefilter.toBool(context.GetInput(ivAddToFlow))
+	addToFlow, _ := toBool(context.GetInput(ivAddToFlow))
 	//
 	// decode it from Json
 	//
-	decodedMessage := kxupdatefilter.DecodeUpdateMessage(message)
+	decodedMessage := DecodeUpdateMessage(message)
 	if (decodedMessage == nil) {
 		return false, errors.New("Incoming message could not be deserialized. Message: " + message)
 	}
