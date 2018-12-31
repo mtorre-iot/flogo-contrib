@@ -87,8 +87,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	if (foundTrig == true) {
 		//
 		// Trigger was found. Check if the inputs were also in the incoming message. Otherwise, read them from RTDB.
-		//
-		//
 		// Open the RealTime DB
 		//
 		db, err := OpenRTDB("/home/mtorre/go/src/knox/kxdb/data.db")
