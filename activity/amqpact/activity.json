@@ -45,18 +45,18 @@
     },
     {
       "name": "responseDurable",
-      "type": "string",
-      "value": ""
+      "type": "boolean",
+      "value": false
     },
     {
       "name": "responseAutoDelete",
-      "type": "string",
-      "value": ""
+      "type": "boolean",
+      "value": false
     },
     {
       "name": "responseReliable",
-      "type": "string",
-      "value": ""
+      "type": "boolean",
+      "value": true
     }
     ,{
       "name": "inputMessage",
