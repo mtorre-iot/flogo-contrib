@@ -16,7 +16,7 @@ const (
 	ivInputTag1 = "inputTag1"
 	ivInputTag2 = "inputTag2"
 
-	ovOutput = "message"
+	ovOutput = "outputVal"
 	ovOutputTag1 = "outputTag1"
 )
 
