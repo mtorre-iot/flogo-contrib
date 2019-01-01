@@ -93,7 +93,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 			return false, err
 		}
-		CloseRTDB(db)
 		if input1Obj.Tag == "" {
 			input1Obj, err = GetRTPObject(db, inputTag1)
 			if (err != nil)	{
