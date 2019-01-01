@@ -116,7 +116,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	//	Create the response exchange object
 	//
-	if responseHostName != "" {
+	if message != "" {
 		a.resExch = AMQPExchangeNew(responseHostName,
 			responsePort,
 			responseExchangeName,
