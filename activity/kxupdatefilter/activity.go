@@ -113,8 +113,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		input2Value = input2Obj.Cv.Value
 		output1Value = input1Value + input2Value
 		activityLog.Info(fmt.Sprintf("Result: %f", output1Value))
+		context.SetOutput(ovOutput, fmt.Sprintf("%f", output1Value))
 	}
-	context.SetOutput(ovOutput, fmt.Sprintf("%f", output1Value))
-
 	return true, nil
 }
