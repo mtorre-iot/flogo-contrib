@@ -1,12 +1,12 @@
 {
-  "name": "flogo-amqp",
+  "name": "flogo-amqpact",
   "type": "flogo:activity",
-  "ref": "github.com/mtorre-iot/flogo-contrib/activity/amqp",
+  "ref": "github.com/mtorre-iot/flogo-contrib/activity/amqpact",
   "version": "0.0.1",
   "title": "Send AMQP Message",
   "author": "Mario Torre <mtorre.work@gmail.com>",
   "description": "AMQP Publish Activity",
-  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/amqp",
+  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/amqpact",
   "input":[
     {
       "name": "responseHostName",

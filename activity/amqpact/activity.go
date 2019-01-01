@@ -1,4 +1,4 @@
-package amqp
+package amqpact
 
 import (
 	"encoding/json"
@@ -76,7 +76,7 @@ func (a *AmqpActivity) Metadata() *activity.Metadata {
 	return a.metadata
 }
 
-func checkParameter (context activity.Context, attribute string) (string, error) {
+func CheckParameter (context activity.Context, attribute string) (string, error) {
 	param := context.GetInput(attribute).(string)
 	if param == "" {
 		errMsg := fmt.Sprintf("Input '%s' not found.", attribute) 
@@ -90,8 +90,8 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	// Response configuration is mandatory
 	//
-	responseHostName,_ := checkParameter(context, rsHostName)
-	responsePortStr,_  := checkParameter(context, rsPort)
+	responseHostName,_ := CheckParameter(context, rsHostName)
+	responsePortStr,_  := CheckParameter(context, rsPort)
 	responsePort := 5672
 	if (responsePortStr != "") {
 		responsePort, err = strconv.Atoi(responsePortStr)
@@ -100,13 +100,13 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 			return false, err
 		}
 	}
-	responseExchangeName,_ := checkParameter(context, rsExchangeName)
-	responseExchangeType,_ := checkParameter(context, rsExchangeType)
-	responseRoutingKey,_ := checkParameter(context, rsRoutingKey)
-	responseUser,_ := checkParameter(context, rsUser)
-	responsePassword,_ := checkParameter(context,rsPassword)
+	responseExchangeName,_ := CheckParameter(context, rsExchangeName)
+	responseExchangeType,_ := CheckParameter(context, rsExchangeType)
+	responseRoutingKey,_ := CheckParameter(context, rsRoutingKey)
+	responseUser,_ := CheckParameter(context, rsUser)
+	responsePassword,_ := CheckParameter(context,rsPassword)
 
-	responseReliableStr, err := checkParameter(context, rsReliable) 
+	responseReliableStr, err := CheckParameter(context, rsReliable) 
 	if err != nil {
 		responseReliableStr = "true"
 	}
@@ -115,7 +115,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 		activityLog.Warn("Response Exchange: Error converting \"Reliable\" to a boolean. Assuming default (true).")
 		responseReliable = true
 	}
-	responseDurableStr, err := checkParameter(context, rsDurable)
+	responseDurableStr, err := CheckParameter(context, rsDurable)
 	if err != nil {
 		responseDurableStr = "false"
 	}
@@ -124,7 +124,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 		activityLog.Warn("Response Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		responseDurable = false
 	}
-	responseAutoDeleteStr, err := checkParameter(context, rsAutoDelete)
+	responseAutoDeleteStr, err := CheckParameter(context, rsAutoDelete)
 	if err != nil {
 		responseAutoDeleteStr = "true"
 	}
@@ -168,7 +168,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 		//
 		// publish the message
 		//
-		err := a.publishMessage(message)
+		err := a.PublishMessage(message)
 		if (err != nil) {
 			return false, err
 		}
@@ -178,7 +178,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 }
 
 
-func (a *AmqpActivity) publishMessage(message string) error {
+func (a *AmqpActivity) PublishMessage(message string) error {
 
 	err := a.resExch.Publish(message)
 	if err != nil {
