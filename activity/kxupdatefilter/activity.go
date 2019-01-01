@@ -16,7 +16,7 @@ const (
 	ivInputTag1 = "inputTag1"
 	ivInputTag2 = "inputTag2"
 
-	ovMessage = "message"
+	ovOutput = "output"
 	ovOutputTag1 = "outputTag1"
 )
 
@@ -114,7 +114,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		output1Value = input1Value + input2Value
 		activityLog.Info(fmt.Sprintf("Result: %f", output1Value))
 	}
-	context.SetOutput(ovMessage, message)
+	context.SetOutput(ovOutput, fmt.Sprintf("%f", output1Value))
 
 	return true, nil
 }
