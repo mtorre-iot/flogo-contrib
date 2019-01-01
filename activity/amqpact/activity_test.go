@@ -1,4 +1,4 @@
-package amqp
+package amqpact
 
 import (
 	"io/ioutil"

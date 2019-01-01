@@ -7,7 +7,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/TIBCOSoftware/flogo-lib/core/data"
+	//"github.com/TIBCOSoftware/flogo-lib/core/data"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 	"github.com/streadway/amqp"
@@ -106,33 +106,9 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 	responseUser,_ := CheckParameter(context, rsUser)
 	responsePassword,_ := CheckParameter(context,rsPassword)
 
-	responseReliableStr, err := CheckParameter(context, rsReliable) 
-	if err != nil {
-		responseReliableStr = "true"
-	}
-	responseReliable, err := data.CoerceToBoolean(responseReliableStr)
-	if err != nil {
-		activityLog.Warn("Response Exchange: Error converting \"Reliable\" to a boolean. Assuming default (true).")
-		responseReliable = true
-	}
-	responseDurableStr, err := CheckParameter(context, rsDurable)
-	if err != nil {
-		responseDurableStr = "false"
-	}
-	responseDurable, err := data.CoerceToBoolean(responseDurableStr)
-	if err != nil {
-		activityLog.Warn("Response Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
-		responseDurable = false
-	}
-	responseAutoDeleteStr, err := CheckParameter(context, rsAutoDelete)
-	if err != nil {
-		responseAutoDeleteStr = "true"
-	}
-	responseAutoDelete, err := data.CoerceToBoolean(responseAutoDeleteStr)
-	if err != nil {
-		activityLog.Debug("Response Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
-		responseAutoDelete = true
-	}
+	responseReliable := context.GetInput(rsReliable).(bool)
+	responseDurable := context.GetInput(rsDurable).(bool)
+	responseAutoDelete := context.GetInput(rsAutoDelete).(bool)
 	//
 	// Get message 
 	//
