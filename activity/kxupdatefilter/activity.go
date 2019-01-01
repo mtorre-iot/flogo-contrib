@@ -93,7 +93,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 			return false, err
 		}
-		defer CloseRTDB(db)
+		CloseRTDB(db)
 		if input1Obj.Tag == "" {
 			input1Obj, err = GetRTPObject(db, inputTag1)
 			if (err != nil)	{
@@ -105,6 +105,13 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			if (err != nil)	{
 				activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", inputTag2, err))
 			}
+		}
+		//
+		// Close RTDB
+		//
+		err = CloseRTDB(db)
+		if (err != nil) {
+			activityLog.Error(fmt.Sprintf("Realtime Database could not be closed. Error %s", err))
 		}
 		//
 		// We should have the input values. Let's to the operation
