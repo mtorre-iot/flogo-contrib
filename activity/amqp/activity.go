@@ -183,9 +183,10 @@ func (a *AmqpActivity) publishMessage(message string) error {
 	err := a.resExch.Publish(message)
 	if err != nil {
 		// Timeout occurred
-		activityLog.Error(fmt.Sprintf("Error occurred while trying to publish to Exchange '%s'", t.resExch.ExchangeName))
+		activityLog.Error(fmt.Sprintf("Error occurred while trying to publish to Exchange '%s'", a.resExch.ExchangeName))
 		return err
 	}
+	return nil
 }
 
 //
