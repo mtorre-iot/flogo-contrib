@@ -85,7 +85,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			input2Obj = triggerObj
 		}
 	}
-	ok := true
 	if (foundTrig == true) {
 		//
 		// Trigger was found. Check if the inputs were also in the incoming message. Otherwise, read them from RTDB.
@@ -96,19 +95,17 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 			return false, err
 		}
-		activityLog.Info("RTDB opened")
+		defer CloseRTDB(db)
 		if input1Obj.Tag == "" {
 			input1Obj, err = GetRTPObject(db, inputTag1)
 			if (err != nil)	{
 				activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", inputTag1, err))
-				ok = false
 			}
 		}
 		if input2Obj.Tag == "" {
 			input2Obj, err = GetRTPObject(db, inputTag2)
 			if (err != nil)	{
 				activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", inputTag2, err))
-				ok = false
 			}
 		}
 		//
@@ -117,18 +114,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		output1Obj, err = GetRTPObject(db, outputTag1)
 		if (err != nil)	{
 			activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", outputTag1, err))
-			ok = false
-		}
-		//
-		// Close RTDB
-		//
-		err = CloseRTDB(db)
-		if err != nil {
-			activityLog.Error(fmt.Sprintf("Realtime Database could not be closed. Error %s", err))
-		}
-		activityLog.Info("RTDB closed")
-		if ok == false {
-			return false, errors.New("Error found accessing RTDB")
 		}
 		//
 		// We should have the input values. Let's to the operation
