@@ -6,9 +6,9 @@ import (
 	"time"
 	"strconv"
 	"encoding/json"
-	//"github.com/TIBCOSoftware/flogo-lib/core/activity"
-	//"github.com/TIBCOSoftware/flogo-lib/logger"
+	"crypto/rand"
 )
+//
 // KXRTPObject configuration structure for Physical Objects
 type KXRTPObject struct {
 	ID int
@@ -40,6 +40,73 @@ func DecodeUpdateMessage (message string) []KXRTPObject {
 		return nil
 	}
 	return updateMessage
+}
+// Scan message Types
+
+type KXScanMessageUnitType int
+
+const (
+	MessageUnitTypeValue	KXScanMessageUnitType = iota
+	MessageUnitTypeQuality 	
+	MessageUnitTypeUnknown
+)
+
+func (scanMessageUnitQuality KXScanMessageUnitType) String() string {
+    names := [...]string{
+        "VALUE", 
+        "QUALITY", 
+        "UNKNOWN"}
+    if scanMessageUnitQuality < MessageUnitTypeValue || scanMessageUnitQuality > MessageUnitTypeUnknown {
+      return "UNKNOWN"
+    }
+    return names[scanMessageUnitQuality]
+}
+//
+// ScanMessage holds a group of new data sent from any scanner to the data processor
+//
+type ScanMessage struct {
+	MID		string
+	Payload	[]ScanMessageUnit
+
+}
+// ScanMessageUnit contains a single new value to be sent to the data processor
+type ScanMessageUnit struct {
+	ID				int
+	Tag				string
+	Value			string
+	Quality			string
+	MType 			KXScanMessageUnitType	
+	TimeStamp		time.Time
+}
+// GUIDNew Generates a new Guid
+func GUIDNew() string {
+	b := make([]byte, 16)
+	rand.Read(b)
+	guid := fmt.Sprintf("%x-%x-%x-%x-%x", b[0:4], b[4:6], b[6:8], b[8:10], b[10:])
+	return guid
+}
+
+// ScanMessageNew creates a new scan message
+func ScanMessageNew() ScanMessage {
+	return ScanMessage{ GUIDNew(), nil }
+}
+
+// ScanMessageAdd Add a new ScanMessageUnit to existing ScanMessage
+func (sm *ScanMessage) ScanMessageAdd(smu ScanMessageUnit) {
+	sm.Payload = append(sm.Payload, smu)
+} 
+
+// ScanMessageUnitNew creates a new scan message Unit
+func ScanMessageUnitNew(pOID int, tag string, value string, quality string, mType KXScanMessageUnitType, timeStamp time.Time) ScanMessageUnit {
+	return ScanMessageUnit{ pOID, tag, value, quality, mType, timeStamp };
+}
+
+func SerializeObject (obj interface{}) (string, error) {
+	bytes, err := json.Marshal(obj)
+	if err != nil {
+		return "", err
+	}
+	return string(bytes), nil
 }
 
 func ToBool(val interface{}) (bool, error) {

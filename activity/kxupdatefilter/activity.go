@@ -2,6 +2,7 @@ package kxupdatefilter
 
 import (
 	"fmt"
+	"time"
 	"errors"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
@@ -48,7 +49,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	triggerTag,_ := context.GetInput(ivTriggerTag).(string)
 	inputTag1,_ := context.GetInput(ivInputTag1).(string)
 	inputTag2,_ := context.GetInput(ivInputTag2).(string)
-	//outputTag1,_ := context.GetSetting(ovOutputTag1).(string)
+	outputTag1,_ := context.GetInput(ovOutputTag1).(string)
 
 	var input1Value float64 
 	var input2Value float64
@@ -56,6 +57,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	var triggerObj KXRTPObject
 	var input1Obj KXRTPObject 
 	var input2Obj KXRTPObject 
+	var output1Obj KXRTPObject
 	//
 	// decode it from Json
 	//
@@ -83,6 +85,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			input2Obj = triggerObj
 		}
 	}
+	ok := true
 	if (foundTrig == true) {
 		//
 		// Trigger was found. Check if the inputs were also in the incoming message. Otherwise, read them from RTDB.
@@ -97,20 +100,33 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			input1Obj, err = GetRTPObject(db, inputTag1)
 			if (err != nil)	{
 				activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", inputTag1, err))
+				ok = false
 			}
 		}
 		if input2Obj.Tag == "" {
 			input2Obj, err = GetRTPObject(db, inputTag2)
 			if (err != nil)	{
 				activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", inputTag2, err))
+				ok = false
 			}
+		}
+		//
+		// Get the Output object
+		//
+		output1Obj, err = GetRTPObject(db, outputTag1)
+		if (err != nil)	{
+			activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", outputTag1, err))
+			ok = false
 		}
 		//
 		// Close RTDB
 		//
 		err = CloseRTDB(db)
-		if (err != nil) {
+		if err != nil {
 			activityLog.Error(fmt.Sprintf("Realtime Database could not be closed. Error %s", err))
+		}
+		if ok == false {
+			return false, errors.New("Error found accessing RTDB")
 		}
 		//
 		// We should have the input values. Let's to the operation
@@ -118,8 +134,19 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		input1Value = input1Obj.Cv.Value
 		input2Value = input2Obj.Cv.Value
 		output1Value = input1Value + input2Value
-		activityLog.Info(fmt.Sprintf("Result: %f", output1Value))
-		context.SetOutput(ovOutput, fmt.Sprintf("%f", output1Value))
+		//
+		// Create the json scan message back to KXDataproc
+		//
+		scanMessage := ScanMessageNew()
+		smu := ScanMessageUnitNew(output1Obj.ID, outputTag1, fmt.Sprintf("%f", output1Value), QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
+		scanMessage.ScanMessageAdd(smu)
+		jsonMessage, err := SerializeObject(scanMessage)
+		if err != nil {
+			activityLog.Error(fmt.Sprintf("Error trying to serialize output message. Error %s", err))
+			return false, err
+		}
+		activityLog.Info(fmt.Sprintf("Output Message: %s", jsonMessage))
+		context.SetOutput(ovOutput, jsonMessage)
 	}
 	return true, nil
 }
