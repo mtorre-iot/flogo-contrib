@@ -149,6 +149,13 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 			return false, err
 		}
 		context.SetOutput(ovMessage, message)
+		//
+		// Close the Response Exchange
+		//
+		if err:= a.resExch.Close(); err != nil {
+			activityLog.Error(fmt.Sprintf("Response Exchange: Unable to Close Exchange: %s : %s", a.resExch.ExchangeName, err))
+			return false, err
+		}
 	}
 	return true, nil
 }
