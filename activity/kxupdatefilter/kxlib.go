@@ -201,3 +201,14 @@ func AnalyticsRequestNew (function string, args []AnalyticsArg) AnalyticsRequest
 func AnalyticsArgNew (name string, value string, quality string) AnalyticsArg {
 	return AnalyticsArg {name, value, quality}
 }
+
+func Mapkey(m map[string]string, value string) (key string, ok bool) {
+	for k, v := range m {
+	  if v == value { 
+		key = k
+		ok = true
+		return
+	  }
+	}
+	return
+  }
