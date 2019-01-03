@@ -2,7 +2,6 @@ package kxrest
 
 import (
 	"bytes"
-	"fmt"
 	"crypto/tls"
 	"encoding/json"
 	"io"
@@ -177,8 +176,6 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	respBody, _ := ioutil.ReadAll(resp.Body)
 
 	var result interface{}
-	var result2 AnalyticsResponse
-
 
 	d := json.NewDecoder(bytes.NewReader(respBody))
 	d.UseNumber()
@@ -189,9 +186,18 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	context.SetOutput(ovResult, result)
 	context.SetOutput(ovStatus, resp.StatusCode)
 
-	json.Unmarshal(result.([]byte), &result2)
+	var xx1 AnalyticsResponse
+	json.Unmarshal(respBody, &xx1)
 
-	activityLog.Info(fmt.Sprintf("results: %v", result2))
+	activityLog.Info("response Body:", result)
+
+	activityLog.Info("xx1 response Body: ", xx1)
+
+	activityLog.Info("xx1 Arg Body: ", xx1.Results[0])
+	activityLog.Info("xx1 Arg Name: ", xx1.Results[0].Name)
+	activityLog.Info("xx1 Arg Value: ", xx1.Results[0].Value)
+	activityLog.Info("xx1 Arg Quality: ", xx1.Results[0].Quality)
+
 
 	return true, nil
 }
