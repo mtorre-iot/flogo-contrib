@@ -189,7 +189,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	context.SetOutput(ovResult, result)
 	context.SetOutput(ovStatus, resp.StatusCode)
 
-	json.Unmarshal(respBody, &result2)
+	json.Unmarshal(result.([]byte), &result2)
 
 	activityLog.Info(fmt.Sprintf("results: %v", result2))
 
