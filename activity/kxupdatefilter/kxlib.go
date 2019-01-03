@@ -179,14 +179,14 @@ func (rtpObject * KXRTPObject) Deserialize(jsonInput string) error {
 
 // AnalyticsRequest main request to analytic calculation
 type AnalyticsRequest struct {
-	function string
-	args	 []AnalyticsArg
+	Function string
+	Args	 []AnalyticsArg
 }
 // AnalyticsArg argument into the request
 type AnalyticsArg struct {
-	name 	string
-	value 	string
-	quality string
+	Name 	string
+	Value 	string
+	Quality string
 }
 
 func AnalyticsRequestNew (function string, args []AnalyticsArg) AnalyticsRequest {
