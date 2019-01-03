@@ -77,7 +77,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	}
 
 	for key, pobj := range inputObjs {
-		fmt.Printf("key: %s, tag: %s", key, pobj.Tag)
+		fmt.Printf("***********************key: %s, tag: %s", key, pobj.Tag)
 	}
 
 	for _, rtPObject := range decodedMessage {
