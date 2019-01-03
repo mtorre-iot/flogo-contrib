@@ -71,13 +71,13 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	inputValues = make(map[string]float64, len(inputTags))
 	inputObjs = make(map[string]KXRTPObject, len(inputTags))
 
-	for key := range inputTags {
-			inputObjs[key] = KXRTPObject{}
-			inputValues[key] = 0.0
+	for _,tag := range inputTags {
+			inputObjs[tag] = KXRTPObject{}
+			inputValues[tag] = 0.0
 	}
 
 	for key, pobj := range inputObjs {
-		fmt.Printf("***********************key: %s, tag: %s", key, pobj.Tag)
+		fmt.Printf("***********************key: %s, tag: %s\n", key, pobj.Tag)
 	}
 
 	for _, rtPObject := range decodedMessage {
