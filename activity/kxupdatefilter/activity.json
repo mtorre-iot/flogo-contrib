@@ -27,16 +27,11 @@
       "name": "inputTag2",
       "type": "string",
       "value": ""
-    },
-    {
-      "name": "outputTag1",
-      "type": "string",
-      "value": ""
     }
   ],
   "output": [
     {
-      "name": "outputVal",
+      "name": "outputStream",
       "type": "string"
     }
   ]
