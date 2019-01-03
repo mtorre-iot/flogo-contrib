@@ -137,7 +137,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			activityLog.Error(fmt.Sprintf("Error trying to serialize analytics request message. Error %s", err))
 			return false, err
 		}
-		activityLog.Info(fmt.Sprintf("Output Message: %s", string(requestJson))
+		activityLog.Info(fmt.Sprintf("Output Message: %s", string(requestJson)))
 		context.SetOutput(ovOutput, string(requestJson))
 
 		output1Value = input1Value + input2Value
