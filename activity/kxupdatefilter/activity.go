@@ -132,7 +132,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 		request := AnalyticsRequestNew("process1", args)
 
-		requestJson, err := json.Marshal(request)
+		requestJson, err := SerializeObject(request)
 		if (err != nil) {
 			activityLog.Error(fmt.Sprintf("Error trying to serialize analytics request message. Error %s", err))
 			return false, err
