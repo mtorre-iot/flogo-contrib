@@ -115,7 +115,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			args = append(args, AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
 		}
 
-		request := AnalyticsRequestNew("process1", args)
+		request := AnalyticsRequestNew("functionName", args)
 
 		requestJson, err := SerializeObject(request)
 		if (err != nil) {
