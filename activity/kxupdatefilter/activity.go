@@ -2,7 +2,6 @@ package kxupdatefilter
 
 import (
 	"fmt"
-	"time"
 	"errors"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
@@ -49,15 +48,15 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	triggerTag,_ := context.GetInput(ivTriggerTag).(string)
 	inputTag1,_ := context.GetInput(ivInputTag1).(string)
 	inputTag2,_ := context.GetInput(ivInputTag2).(string)
-	outputTag1,_ := context.GetInput(ovOutputTag1).(string)
+	//outputTag1,_ := context.GetInput(ovOutputTag1).(string)
 
 	var input1Value float64 
 	var input2Value float64
-	var output1Value float64
+	//var output1Value float64
 	var triggerObj KXRTPObject
 	var input1Obj KXRTPObject 
 	var input2Obj KXRTPObject 
-	var output1Obj KXRTPObject
+	//var output1Obj KXRTPObject
 	//
 	// decode it from Json
 	//
@@ -113,10 +112,10 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		//
 		// Get the Output object
 		//
-		output1Obj, err = GetRTPObject(db, outputTag1)
+/* 		output1Obj, err = GetRTPObject(db, outputTag1)
 		if (err != nil)	{
 			activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", outputTag1, err))
-		}
+		} */
 		//
 		// We should have the input values. Let's to create the output argument message
 		//
