@@ -138,7 +138,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		}
 		activityLog.Info(fmt.Sprintf("Output Message: %s", requestJson))
 		context.SetOutput(ovOutput, requestJson)
-
+/*
 		output1Value = input1Value + input2Value
 		//
 		// Create the json scan message back to KXDataproc
@@ -152,7 +152,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			return false, err
 		}
 		activityLog.Info(fmt.Sprintf("Output Message: %s", jsonMessage))
-		context.SetOutput(ovOutput, jsonMessage)
+		context.SetOutput(ovOutput, jsonMessage) */
 	}
 	return true, nil
 }
