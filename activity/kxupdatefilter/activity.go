@@ -152,6 +152,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		}
 		activityLog.Info(fmt.Sprintf("Output Message: %s", jsonMessage))
 		context.SetOutput(ovOutput, jsonMessage) */
+		return true, nil
 	}
-	return true, nil
+	return false, nil
 }
