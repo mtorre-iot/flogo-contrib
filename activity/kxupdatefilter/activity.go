@@ -96,9 +96,9 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			input2Obj = triggerObj
 		} */
 
-		for key, intag := range inputTags {
+		for _, intag := range inputTags {
 			if rtPObject.Tag == intag {
-				inputObjs[key] = triggerObj
+				inputObjs[intag] = triggerObj
 			}
 		}
 	}
