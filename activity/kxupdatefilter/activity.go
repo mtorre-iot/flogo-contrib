@@ -110,10 +110,8 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		// We should have the input values. Let's to create the output argument message
 		//
 		args:= [] AnalyticsArg{}
-		cnt := 1
 		for _, pobj := range inputObjs {
-			args = append(args, AnalyticsArgNew(fmt.Sprintf("arg%d", cnt), fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
-			cnt++
+			args = append(args, AnalyticsArgNew(inputTags[pobj.Tag], fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
 		}
 
 		request := AnalyticsRequestNew("process1", args)
