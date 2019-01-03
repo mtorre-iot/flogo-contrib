@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 	"errors"
+	"encoding/json"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
@@ -118,10 +119,27 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", outputTag1, err))
 		}
 		//
-		// We should have the input values. Let's to the operation
+		// We should have the input values. Let's to create the output argument message
 		//
 		input1Value = input1Obj.Cv.Value
 		input2Value = input2Obj.Cv.Value
+		// {"func": "process1", "args":[{"name": "arg1","value": "1234", "quality": "OK"},{ "name": "arg2", "value":"222", "quality": "OK"}]}
+		// Create the request message
+		//
+		args:= [] AnalyticsArg{}
+		args = append(args, AnalyticsArgNew("arg1", fmt.Sprintf("%f", input1Value), input1Obj.Cv.Quality.String()))
+		args = append(args, AnalyticsArgNew("arg2", fmt.Sprintf("%f", input2Value), input1Obj.Cv.Quality.String()))
+
+		request := AnalyticsRequestNew("process1", args)
+
+		requestJson, err := json.Marshal(request)
+		if (err != nil) {
+			activityLog.Error(fmt.Sprintf("Error trying to serialize analytics request message. Error %s", err))
+			return false, err
+		}
+		activityLog.Info(fmt.Sprintf("Output Message: %s", string(requestJson))
+		context.SetOutput(ovOutput, string(requestJson))
+
 		output1Value = input1Value + input2Value
 		//
 		// Create the json scan message back to KXDataproc

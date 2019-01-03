@@ -176,3 +176,23 @@ func (rtpObject * KXRTPObject) Deserialize(jsonInput string) error {
 	err := json.Unmarshal(bArray, rtpObject)
 	return err
 }
+
+// AnalyticsRequest main request to analytic calculation
+type AnalyticsRequest struct {
+	function string
+	args	 []AnalyticsArg
+}
+// AnalyticsArg argument into the request
+type AnalyticsArg struct {
+	name 	string
+	value 	string
+	quality string
+}
+
+func AnalyticsRequestNew (function string, args []AnalyticsArg) AnalyticsRequest {
+	return AnalyticsRequest {function, args}
+}
+
+func AnalyticsArgNew (name string, value string, quality string) AnalyticsArg {
+	return AnalyticsArg {name, value, quality}
+}
