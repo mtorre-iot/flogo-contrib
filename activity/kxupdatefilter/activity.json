@@ -21,15 +21,8 @@
       "required": true
     },
     {
-      "name": "inputTag1",
-      "type": "string",
-      "value": "",
-      "required": true
-    },
-    {
-      "name": "inputTag2",
-      "type": "string",
-      "value": "",
+      "name": "inputTags",
+      "type": "params",
       "required": true
     }
   ],
