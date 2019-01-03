@@ -11,22 +11,26 @@
     {
       "name": "message",
       "type": "string",
-      "value": ""
+      "value": "",
+      "required": true
     },
     {
       "name": "triggerTag",
       "type": "string",
-      "value": ""
+      "value": "",
+      "required": true
     },
     {
       "name": "inputTag1",
       "type": "string",
-      "value": ""
+      "value": "",
+      "required": true
     },
     {
       "name": "inputTag2",
       "type": "string",
-      "value": ""
+      "value": "",
+      "required": true
     }
   ],
   "output": [

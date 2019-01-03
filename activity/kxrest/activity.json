@@ -10,11 +10,13 @@
     {
       "name": "function",
       "type": "string",
+      "value": "",
       "required": true
     },
     {
       "name": "outputTag",
       "type": "string",
+      "value": "",
       "required": true
     },
     {
@@ -26,11 +28,13 @@
     {
       "name": "uri",
       "type": "string",
+      "value": "",
       "required": true
     },
     {
       "name": "proxy",
       "type": "string",
+      "value": "",
       "required": false
     },
     {

@@ -17,7 +17,7 @@ import (
 )
 
 // log is the default package logger
-var activityLog = logger.GetLogger("activity-knox-rest")
+var activityLog = logger.GetLogger("activity-knox-kxrest")
 
 const (
 	methodGET    = "GET"
@@ -184,17 +184,8 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 
 	activityLog.Debug("response Body:", result)
 
-	var xx1 AnalyticsResponse
-	json.Unmarshal(respBody, &xx1)
-
-	activityLog.Info("response Body:", result)
-
-	activityLog.Info("xx1 response Body: ", xx1)
-
-	activityLog.Info("xx1 Arg Body: ", xx1.Results[0])
-	activityLog.Info("xx1 Arg Name: ", xx1.Results[0].Name)
-	activityLog.Info("xx1 Arg Value: ", xx1.Results[0].Value)
-	activityLog.Info("xx1 Arg Quality: ", xx1.Results[0].Quality)
+	var resultx AnalyticsResponse
+	json.Unmarshal(respBody, &resultx)
 	//
 	// Get the Output object
 	//
@@ -217,7 +208,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	// Create the json scan message back to KXDataproc
 	//
 	scanMessage := ScanMessageNew()
-	smu := ScanMessageUnitNew(output1Obj.ID, outputTag, xx1.Results[0].Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
+	smu := ScanMessageUnitNew(output1Obj.ID, outputTag, resultx.Results[0].Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
 	scanMessage.ScanMessageAdd(smu)
 	jsonMessage, err := SerializeObject(scanMessage)
 	if err != nil {
