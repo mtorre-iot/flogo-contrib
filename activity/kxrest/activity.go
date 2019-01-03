@@ -15,7 +15,7 @@ import (
 )
 
 // log is the default package logger
-var log = logger.GetLogger("activity-knox-rest")
+var activityLog = logger.GetLogger("activity-knox-rest")
 
 const (
 	methodGET    = "GET"
@@ -45,6 +45,10 @@ var validMethods = []string{methodGET, methodPOST, methodPUT, methodPATCH, metho
 // outputs: {result}
 type KXRESTActivity struct {
 	metadata *activity.Metadata
+}
+
+func init() {
+	activityLog.SetLogLevel(logger.DebugLevel)
 }
 
 // NewActivity creates a new RESTActivity
@@ -92,7 +96,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 		uri = uri + "?" + qp.Encode()
 	}
 
-	log.Infof("REST Call: [%s] %s\n", method, uri)
+	activityLog.Infof("REST Call: [%s] %s\n", method, uri)
 
 	var reqBody io.Reader
 
@@ -127,10 +131,10 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	}
 
 	// Set headers
-	log.Debug("Setting HTTP request headers...")
+	activityLog.Debug("Setting HTTP request headers...")
 	if headers, ok := context.GetInput(ivHeader).(map[string]string); ok && len(headers) > 0 {
 		for key, value := range headers {
-			log.Debugf("%s: %s", key, value)
+			activityLog.Debugf("%s: %s", key, value)
 			req.Header.Set(key, value)
 		}
 	}
@@ -144,11 +148,11 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	if ok && len(proxyValue) > 0 {
 		proxyURL, urlErr := url.Parse(proxyValue)
 		if urlErr != nil {
-			log.Debug("Error parsing proxy url:", urlErr)
+			activityLog.Debug("Error parsing proxy url:", urlErr)
 			return false, urlErr
 		}
 
-		log.Debug("Setting proxy server:", proxyValue)
+		activityLog.Debug("Setting proxy server:", proxyValue)
 		httpTransportSettings.Proxy = http.ProxyURL(proxyURL)
 	}
 
@@ -166,7 +170,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 		return false, err
 	}
 
-	log.Debug("response Status:", resp.Status)
+	activityLog.Debug("response Status:", resp.Status)
 	respBody, _ := ioutil.ReadAll(resp.Body)
 
 	var result interface{}
@@ -177,7 +181,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 
 	//json.Unmarshal(respBody, &result)
 
-	log.Debug("response Body:", result)
+	activityLog.Debug("response Body:", result)
 
 	context.SetOutput(ovResult, result)
 	context.SetOutput(ovStatus, resp.StatusCode)

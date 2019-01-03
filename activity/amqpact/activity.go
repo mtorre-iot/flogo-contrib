@@ -15,7 +15,7 @@ import (
 
 // log is the default package logger
 var (
-	activityLog = logger.GetLogger("activity-flogo-activity")
+	activityLog = logger.GetLogger("activity-flogo-amqpact")
 	rsHostName     = "responseHostName"
 	rsPort         = "responsePort"
 	rsExchangeName = "responseExchangeName"
