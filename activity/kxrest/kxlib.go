@@ -1,4 +1,4 @@
-package kxupdatefilter
+package kxrest
 
 import (
 	"fmt"

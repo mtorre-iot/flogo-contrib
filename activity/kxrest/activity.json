@@ -3,10 +3,20 @@
   "type": "flogo:activity",
   "ref": "github.com/mtorre-iot/flogo-contrib/activity/kxrest",
   "version": "0.0.1",
-  "title": "Invoke KNOX REST Service",
-  "description": "Invoke a KNOX REST Activity",
+  "title": "Invoke KNOX Analytics REST Service",
+  "description": "Invoke a KNOX Analytics REST Activity",
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxrest",
   "input":[
+    {
+      "name": "function",
+      "type": "string",
+      "required": true
+    },
+    {
+      "name": "outputTag",
+      "type": "string",
+      "required": true
+    },
     {
       "name": "method",
       "type": "string",

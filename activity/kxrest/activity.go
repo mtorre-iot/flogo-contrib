@@ -2,6 +2,7 @@ package kxrest
 
 import (
 	"bytes"
+	"fmt"
 	"crypto/tls"
 	"encoding/json"
 	"io"
@@ -33,6 +34,9 @@ const (
 	ivParams      = "params"
 	ivProxy       = "proxy"
 	ivSkipSsl     = "skipSsl"
+
+	ivFunction	= "function"
+	ivOutputTag	= "outputTag"
 
 	ovResult = "result"
 	ovStatus = "status"
@@ -92,7 +96,6 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 		for key, value := range queryParams {
 			qp.Set(key, value)
 		}
-
 		uri = uri + "?" + qp.Encode()
 	}
 
@@ -174,17 +177,21 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	respBody, _ := ioutil.ReadAll(resp.Body)
 
 	var result interface{}
+	var result2 AnalyticsResponse
+
 
 	d := json.NewDecoder(bytes.NewReader(respBody))
 	d.UseNumber()
 	err = d.Decode(&result)
 
-	//json.Unmarshal(respBody, &result)
-
 	activityLog.Debug("response Body:", result)
 
 	context.SetOutput(ovResult, result)
 	context.SetOutput(ovStatus, resp.StatusCode)
+
+	json.Unmarshal(respBody, &result2)
+
+	activityLog.Info(fmt.Sprintf("results: %v", result2))
 
 	return true, nil
 }
