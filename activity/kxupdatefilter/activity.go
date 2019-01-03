@@ -76,6 +76,10 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			inputValues[key] = 0.0
 	}
 
+	for key, pobj := range inputObjs {
+		fmt.Printf("key: %s, tag: %s", key, pobj.Tag)
+	}
+
 	for _, rtPObject := range decodedMessage {
 		// 
 		// Check if any of the received tags is the associated trigger
@@ -128,6 +132,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 				inputObjs[key], err = GetRTPObject(db, key)
 				if (err != nil)	{
 					activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", pobj.Tag, err))
+					return false, err
 				}
 			}
 		}
