@@ -92,7 +92,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 		uri = uri + "?" + qp.Encode()
 	}
 
-	log.Debugf("REST Call: [%s] %s\n", method, uri)
+	log.Infof("REST Call: [%s] %s\n", method, uri)
 
 	var reqBody io.Reader
 
