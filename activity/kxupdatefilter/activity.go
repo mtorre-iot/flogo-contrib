@@ -125,7 +125,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		} */
 		for key, pobj := range inputObjs {
 			if pobj.Tag == "" {
-				inputObjs[key], err = GetRTPObject(db, pobj.Tag)
+				inputObjs[key], err = GetRTPObject(db, key)
 				if (err != nil)	{
 					activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", pobj.Tag, err))
 				}
