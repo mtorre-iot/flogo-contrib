@@ -57,12 +57,8 @@
   ],
   "output": [
     {
-      "name": "result",
-      "type": "any"
-    },
-    {
-      "name": "status",
-      "type": "integer"
+      "name": "message",
+      "type": "string"
     }
   ]
 }

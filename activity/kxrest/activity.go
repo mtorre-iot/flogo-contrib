@@ -2,6 +2,8 @@ package kxrest
 
 import (
 	"bytes"
+	"fmt"
+	"time"
 	"crypto/tls"
 	"encoding/json"
 	"io"
@@ -37,8 +39,7 @@ const (
 	ivFunction	= "function"
 	ivOutputTag	= "outputTag"
 
-	ovResult = "result"
-	ovStatus = "status"
+	ovMessage = "message"
 )
 
 var validMethods = []string{methodGET, methodPOST, methodPUT, methodPATCH, methodDELETE}
@@ -51,7 +52,7 @@ type KXRESTActivity struct {
 }
 
 func init() {
-	activityLog.SetLogLevel(logger.DebugLevel)
+	activityLog.SetLogLevel(logger.DebugLevel) 
 }
 
 // NewActivity creates a new RESTActivity
@@ -183,9 +184,6 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 
 	activityLog.Debug("response Body:", result)
 
-	context.SetOutput(ovResult, result)
-	context.SetOutput(ovStatus, resp.StatusCode)
-
 	var xx1 AnalyticsResponse
 	json.Unmarshal(respBody, &xx1)
 
@@ -197,7 +195,37 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	activityLog.Info("xx1 Arg Name: ", xx1.Results[0].Name)
 	activityLog.Info("xx1 Arg Value: ", xx1.Results[0].Value)
 	activityLog.Info("xx1 Arg Quality: ", xx1.Results[0].Quality)
-
+	//
+	// Get the Output object
+	//
+	outputTag := context.GetInput(ivOutputTag).(string)
+	//
+	// Open the RealTime DB
+	//
+	db, err := OpenRTDB("/home/mtorre/go/src/knox/kxdb/data.db")
+	if err != nil {
+		activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
+		return false, err
+	}
+		// make sure it closes after finish
+	defer CloseRTDB(db)
+	output1Obj, err := GetRTPObject(db, outputTag)
+	if (err != nil)	{
+		activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", outputTag, err))
+	}
+	//
+	// Create the json scan message back to KXDataproc
+	//
+	scanMessage := ScanMessageNew()
+	smu := ScanMessageUnitNew(output1Obj.ID, outputTag, xx1.Results[0].Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
+	scanMessage.ScanMessageAdd(smu)
+	jsonMessage, err := SerializeObject(scanMessage)
+	if err != nil {
+		activityLog.Error(fmt.Sprintf("Error trying to serialize output message. Error %s", err))
+		return false, err
+	}
+	activityLog.Info(fmt.Sprintf("Output Message: %s", jsonMessage))
+	context.SetOutput(ovMessage, jsonMessage) 
 
 	return true, nil
 }
