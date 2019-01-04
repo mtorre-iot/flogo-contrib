@@ -11,11 +11,13 @@
     {
       "name": "requestHostName",
       "type": "string",
+      "value": "localhost",
       "required": true
     },
     {
       "name": "requestPort",
       "type": "string",
+      "value": "5672",
       "required": true
     },
     {
@@ -26,36 +28,43 @@
     {
       "name": "requestExchangeType",
       "type": "string",
+      "value": "topic",
       "required": true
     },
     {
       "name": "requestRoutingKey",
       "type": "string",
+      "value": "#",
       "required": true
     },
     {
       "name": "requestUser",
       "type": "string",
+      "value": "guest",
       "required": true
     },    
     {
       "name": "requestPassword",
       "type": "string",
+      "value": "guest",
       "required": true
     },
     {
       "name": "requestDurable",
       "type": "string",
+      "value": "false",
       "required": false
     },
     {
       "name": "requestAutoDelete",
       "type": "string",
+      "value": "false",
       "required": false
     },
     {
       "name": "requestReliable",
       "type": "string",
+      "value": "false",
       "required": false
     },
     {
@@ -126,6 +135,7 @@
       {
         "name": "topic",
         "type": "string",
+        "value": "#",
         "required": true
       }
     ]

@@ -11,12 +11,14 @@
     {
       "name": "responseHostName",
       "type": "string",
-      "value": ""
+      "value": "localhost",
+      "required": true
     },
     {
       "name": "responsePort",
       "type": "string",
-      "value": ""
+      "value": "5672",
+      "required": true
     },
     {
       "name": "responseExchangeName",
@@ -26,22 +28,26 @@
     {
       "name": "responseExchangeType",
       "type": "string",
-      "value": ""
+      "value": "topic",
+      "required": true
     },
     {
       "name": "responseRoutingKey",
       "type": "string",
-      "value": ""
+      "value": "#",
+      "required": true
     },
     {
       "name": "responseUser",
       "type": "string",
-      "value": ""
+      "value": "guest",
+      "required": true
     },    
     {
       "name": "responsePassword",
       "type": "string",
-      "value": ""
+      "value": "guest",
+      "required": true
     },
     {
       "name": "responseDurable",
@@ -61,7 +67,8 @@
     ,{
       "name": "inputMessage",
       "type": "string",
-      "value": ""
+      "value": "",
+      "required": true
     }
   ],
   "output": [

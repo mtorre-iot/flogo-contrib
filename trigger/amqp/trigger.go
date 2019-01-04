@@ -173,7 +173,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	requestAutoDeleteStr, err := t.checkParameter(rqAutoDelete)
 	if err != nil {
-		requestAutoDeleteStr = "true"
+		requestAutoDeleteStr = "false"
 	}
 	requestAutoDelete, err := data.CoerceToBoolean(requestAutoDeleteStr)
 	if err != nil {
