@@ -117,7 +117,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		args:= [] AnalyticsArg{}
 		for _, pobj := range inputObjs {
 			key,_ := Mapkey(inputTags, pobj.Tag)
-			fmt.Printf("****************key: %s, tag: %s\n", key, pobj.Tag )
+			//fmt.Printf("****************key: %s, tag: %s\n", key, pobj.Tag )
 			args = append(args, AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
 		}
 
