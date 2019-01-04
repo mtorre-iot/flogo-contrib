@@ -80,7 +80,12 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			activityLog.Info(fmt.Sprintf("Found %s in the trigger!", triggerTag))
 			foundTrig = true
 		} 
-		inputObjs[rtPObject.Tag] = rtPObject
+
+		for _, intag := range inputTags {
+			if rtPObject.Tag == intag {
+				inputObjs[intag] = rtPObject
+			}
+		}
 	}
 	if (foundTrig == true) {
 		//
