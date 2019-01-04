@@ -52,7 +52,6 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 	var inputValues map[string]float64
 
-	var triggerObj KXRTPObject
 	var inputObjs map[string]KXRTPObject 
 	//
 	// decode it from Json
@@ -79,15 +78,9 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		//
 		if rtPObject.Tag == triggerTag {
 			activityLog.Info(fmt.Sprintf("Found %s in the trigger!", triggerTag))
-			triggerObj = rtPObject
 			foundTrig = true
 		} 
-
-		for _, intag := range inputTags {
-			if rtPObject.Tag == intag {
-				inputObjs[intag] = rtPObject
-			}
-		}
+		inputObjs[rtPObject.Tag] = rtPObject
 	}
 	if (foundTrig == true) {
 		//
