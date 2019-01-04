@@ -191,7 +191,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	//outputTag := context.GetInput(ivOutputTag).(string)
 	val := context.GetInput(ivOutputTags)
 	outputTags := val.(map[string]string)
-	var outputObjs map[string] KXRTPObject
+	outputObjs := make(map[string] KXRTPObject)
 	//
 	// Open the RealTime DB
 	//
