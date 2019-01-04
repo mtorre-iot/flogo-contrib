@@ -190,7 +190,6 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	// Get the Output object
 	//
-	//outputTag := context.GetInput(ivOutputTag).(string)
 	val := context.GetInput(ivOutputTags)
 	outputTags := val.(map[string]string)
 	outputObjs := make(map[string] KXRTPObject)
