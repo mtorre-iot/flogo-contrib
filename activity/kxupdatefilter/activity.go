@@ -46,6 +46,9 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	val := context.GetInput(ivInputTags)
 	inputTags := val.(map[string]string)
 	functionName := context.GetInput(ivFunctionName).(string)
+	if functionName == "" {
+		return false, errors.New("a function name must be provided")
+	}
 
 	var inputValues map[string]float64
 
