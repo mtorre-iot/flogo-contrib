@@ -36,7 +36,6 @@ const (
 	ivProxy       = "proxy"
 	ivSkipSsl     = "skipSsl"
 
-	ivFunction	= "function"
 	ivOutputTag	= "outputTag"
 
 	ovMessage = "message"
