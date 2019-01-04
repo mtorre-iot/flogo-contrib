@@ -207,8 +207,10 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	// Create the json scan message back to KXDataproc
 	//
 	scanMessage := ScanMessageNew()
-	smu := ScanMessageUnitNew(output1Obj.ID, outputTag, resultx.Results[0].Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
-	scanMessage.ScanMessageAdd(smu)
+	for _,res := range resultx.Results {
+		smu := ScanMessageUnitNew(output1Obj.ID, outputTag, res.Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
+		scanMessage.ScanMessageAdd(smu)
+	}
 	jsonMessage, err := SerializeObject(scanMessage)
 	if err != nil {
 		activityLog.Error(fmt.Sprintf("Error trying to serialize output message. Error %s", err))
