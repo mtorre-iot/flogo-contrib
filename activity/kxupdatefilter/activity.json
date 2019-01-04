@@ -15,6 +15,12 @@
       "required": true
     },
     {
+      "name": "RTDBFile",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
       "name": "triggerTag",
       "type": "string",
       "value": "",

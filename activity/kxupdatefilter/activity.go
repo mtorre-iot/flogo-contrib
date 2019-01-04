@@ -14,6 +14,7 @@ const (
 	ivMessage   = "message"
 	ivTriggerTag = "triggerTag"
 	ivInputTags = "inputTags"
+	ivRTDBFile = "RTDBFile"
 	ivFunctionName = "functionName"
 	ovOutput = "outputStream"
 )
@@ -42,6 +43,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 	message, _ := context.GetInput(ivMessage).(string)
 	triggerTag,_ := context.GetInput(ivTriggerTag).(string)
+	rtdbFile := context.GetInput(ivRTDBFile).(string)
 	
 	val := context.GetInput(ivInputTags)
 	inputTags := val.(map[string]string)
@@ -92,7 +94,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		// Trigger was found. Check if the inputs were also in the incoming message. Otherwise, read them from RTDB.
 		// Open the RealTime DB
 		//
-		db, err := OpenRTDB("/home/mtorre/go/src/knox/kxdb/data.db")
+		db, err := OpenRTDB(rtdbFile)
 		if err != nil {
 			activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 			return false, err

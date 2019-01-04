@@ -35,6 +35,7 @@ const (
 	ivParams      = "params"
 	ivProxy       = "proxy"
 	ivSkipSsl     = "skipSsl"
+	ivRTDBFile 	  = "RTDBFile"
 
 	ivOutputTags  = "outputTags"
 
@@ -69,6 +70,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 
 	method := strings.ToUpper(context.GetInput(ivMethod).(string))
 	uri := context.GetInput(ivURI).(string)
+	rtdbFile := context.GetInput(ivRTDBFile).(string)
 
 	containsParam := strings.Index(uri, "/:") > -1
 
@@ -195,7 +197,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	// Open the RealTime DB
 	//
-	db, err := OpenRTDB("/home/mtorre/go/src/knox/kxdb/data.db")
+	db, err := OpenRTDB(rtdbFile)
 	if err != nil {
 		activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 		return false, err

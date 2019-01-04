@@ -8,6 +8,12 @@
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxrest",
   "input":[
     {
+      "name": "RTDBFile",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
       "name": "outputTags",
       "type": "params",
       "value": "",
@@ -50,7 +56,8 @@
     },
     {
       "name": "content",
-      "type": "any"
+      "type": "any",
+      "required": true
     }
   ],
   "output": [
