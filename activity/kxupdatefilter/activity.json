@@ -24,7 +24,14 @@
       "name": "inputTags",
       "type": "params",
       "required": true
+    },
+    {
+      "name": "functionName",
+      "type": "string",
+      "value": "",
+      "required": true
     }
+
   ],
   "output": [
     {

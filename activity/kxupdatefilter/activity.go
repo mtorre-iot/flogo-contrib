@@ -14,6 +14,7 @@ const (
 	ivMessage   = "message"
 	ivTriggerTag = "triggerTag"
 	ivInputTags = "inputTags"
+	ivFunctionName = "functionName"
 	ovOutput = "outputStream"
 )
 
@@ -44,6 +45,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	
 	val := context.GetInput(ivInputTags)
 	inputTags := val.(map[string]string)
+	functionName := context.GetInput(ivFunctionName).(string)
 
 	var inputValues map[string]float64
 
@@ -115,7 +117,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			args = append(args, AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
 		}
 
-		request := AnalyticsRequestNew("functionName", args)
+		request := AnalyticsRequestNew(functionName, args)
 
 		requestJson, err := SerializeObject(request)
 		if (err != nil) {
