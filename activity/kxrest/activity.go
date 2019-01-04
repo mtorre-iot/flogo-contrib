@@ -36,7 +36,7 @@ const (
 	ivProxy       = "proxy"
 	ivSkipSsl     = "skipSsl"
 
-	ivOutputTag	= "outputTag"
+	ivOutputTags  = "outputTags"
 
 	ovMessage = "message"
 )
@@ -188,7 +188,10 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	// Get the Output object
 	//
-	outputTag := context.GetInput(ivOutputTag).(string)
+	//outputTag := context.GetInput(ivOutputTag).(string)
+	val := context.GetInput(ivOutputTags)
+	outputTags := val.(map[string]string)
+	var outputObjs map[string] KXRTPObject
 	//
 	// Open the RealTime DB
 	//
@@ -197,18 +200,21 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 		activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 		return false, err
 	}
-		// make sure it closes after finish
+	// make sure it closes after finish
 	defer CloseRTDB(db)
-	output1Obj, err := GetRTPObject(db, outputTag)
-	if (err != nil)	{
-		activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", outputTag, err))
+	for _, tag := range outputTags {
+		outputObjs[tag], err = GetRTPObject(db, tag)
+		if (err != nil)	{
+			activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", tag, err))
+			return false, err
+		}
 	}
 	//
 	// Create the json scan message back to KXDataproc
 	//
 	scanMessage := ScanMessageNew()
 	for _,res := range resultx.Results {
-		smu := ScanMessageUnitNew(output1Obj.ID, outputTag, res.Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
+		smu := ScanMessageUnitNew(outputObjs[outputTags[res.Name]].ID, outputTags[res.Name], res.Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
 		scanMessage.ScanMessageAdd(smu)
 	}
 	jsonMessage, err := SerializeObject(scanMessage)

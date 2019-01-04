@@ -201,3 +201,4 @@ func AnalyticsRequestNew (function string, args []AnalyticsArg) AnalyticsRequest
 func AnalyticsArgNew (name string, value string, quality string) AnalyticsArg {
 	return AnalyticsArg {name, value, quality}
 }
+

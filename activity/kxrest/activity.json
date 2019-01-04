@@ -8,8 +8,8 @@
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxrest",
   "input":[
     {
-      "name": "outputTag",
-      "type": "string",
+      "name": "outputTags",
+      "type": "params",
       "value": "",
       "required": true
     },
