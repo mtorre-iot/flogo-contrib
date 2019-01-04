@@ -65,8 +65,8 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	// test - print the tags
 	//
 	foundTrig:= false
-	inputValues = make(map[string]float64, len(inputTags))
-	inputObjs = make(map[string]KXRTPObject, len(inputTags))
+	inputValues = make(map[string]float64)
+	inputObjs = make(map[string]KXRTPObject)
 
 	for _,tag := range inputTags {
 			inputObjs[tag] = KXRTPObject{}
@@ -85,7 +85,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 		for _, intag := range inputTags {
 			if rtPObject.Tag == intag {
-				inputObjs[intag] = triggerObj
+				inputObjs[intag] = rtPObject
 			}
 		}
 	}
@@ -117,7 +117,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		args:= [] AnalyticsArg{}
 		for _, pobj := range inputObjs {
 			key,_ := Mapkey(inputTags, pobj.Tag)
-			//fmt.Printf("****************key: %s, tag: %s\n", key, pobj.Tag )
+			fmt.Printf("****************key: %s, tag: %s\n", key, pobj.Tag )
 			args = append(args, AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
 		}
 
