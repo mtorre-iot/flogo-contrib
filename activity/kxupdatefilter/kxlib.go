@@ -32,14 +32,14 @@ type RtAvg struct {
 }
 
 // DecodeUpdateMessage get messages coming from a KXDataProc
-func DecodeUpdateMessage (message string) []KXRTPObject {
+func DecodeUpdateMessage (message string) (KXRTPObject, error) {
 
-	var updateMessage []KXRTPObject 
+	var updateMessage KXRTPObject 
 	// decode message
 	if err := json.Unmarshal([]byte(message), &updateMessage); err != nil {
-		return nil
+		return KXRTPObject{}, err
 	}
-	return updateMessage
+	return updateMessage, nil
 }
 // Scan message Types
 

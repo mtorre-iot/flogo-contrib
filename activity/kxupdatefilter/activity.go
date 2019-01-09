@@ -58,8 +58,8 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//
 	// decode it from Json
 	//
-	decodedMessage := DecodeUpdateMessage(message)
-	if (decodedMessage == nil) {
+	rtPObject, err := DecodeUpdateMessage(message)
+	if (err != nil) {
 		return false, errors.New("Incoming message could not be deserialized. Message: " + message)
 	}
 	//
@@ -74,21 +74,17 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			inputValues[tag] = 0.0
 	}
 
-	for _, rtPObject := range decodedMessage {
-		// 
-		// Check if any of the received tags is the associated trigger
-		//
-		if rtPObject.Tag == triggerTag {
-			activityLog.Info(fmt.Sprintf("Found %s in the trigger!", triggerTag))
-			foundTrig = true
-		} 
+	if rtPObject.Tag == triggerTag {
+		activityLog.Info(fmt.Sprintf("Found %s in the trigger!", triggerTag))
+		foundTrig = true
+	} 
 
-		for _, intag := range inputTags {
-			if rtPObject.Tag == intag {
-				inputObjs[intag] = rtPObject
-			}
+	for _, intag := range inputTags {
+		if rtPObject.Tag == intag {
+			inputObjs[intag] = rtPObject
 		}
 	}
+
 	if (foundTrig == true) {
 		//
 		// Trigger was found. Check if the inputs were also in the incoming message. Otherwise, read them from RTDB.
