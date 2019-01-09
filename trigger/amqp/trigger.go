@@ -295,7 +295,6 @@ func (t *AmqpTrigger) Start() error {
 		topic := handler.GetStringSetting("topic")
 		t.topicToHandler[topic] = handler
 	}
-
 	return nil
 }
 
@@ -305,8 +304,11 @@ func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 		log.Debugf("Message received: %s", payload)
 		topic := fmt.Sprintf("%s", d.RoutingKey)
 		handler, found := t.topicToHandler[topic]
+		handlerDef, foundDef := t.topicToHandler["#"]
 		if found {
 			t.RunHandler(handler, payload)
+		} else if foundDef {
+			t.RunHandler(handlerDef, payload)
 		} else {
 			log.Warnf("handler for topic '%s' not found", topic)
 		}
