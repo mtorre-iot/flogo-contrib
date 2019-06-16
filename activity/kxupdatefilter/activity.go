@@ -3,6 +3,8 @@ package kxupdatefilter
 import (
 	"fmt"
 	"errors"
+	"strings"
+	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
@@ -88,19 +90,28 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	if (foundTrig == true) {
 		//
 		// Trigger was found. Check if the inputs were also in the incoming message. Otherwise, read them from RTDB.
-		// Open the RealTime DB
 		//
-		db, err := OpenRTDB(rtdbFile)
+		// decode (unmarshall) the RTDB server pars
+		rtdbPars := strings.Split(rtdbFile,":")
+		// create the realtime DB access object
+		var rtdb RTDB
+		port, err := strconv.Atoi(rtdbPars[1])
+		if err != nil {
+			return false, err
+		}
+		rtdb.RTDBNew(rtdbPars[0], port, rtdbPars[2],rtdbPars[3], 0, "json") 
+		// Open the RealTime DB
+		err = rtdb.OpenRTDB()
 		if err != nil {
 			activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 			return false, err
 		}
 		// make sure it closes after finish
-		defer CloseRTDB(db)
+		defer rtdb.CloseRTDB()
 		// check all tags
 		for key, pobj := range inputObjs {
 			if pobj.Tag == "" {
-				inputObjs[key], err = GetRTPObject(db, key)
+				inputObjs[key], err = rtdb.GetRTPObject(key)
 				if (err != nil)	{
 					activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", key, err))
 					return false, err

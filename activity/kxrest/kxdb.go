@@ -1,70 +1,96 @@
 package kxrest
 
 import (
-	"github.com/mtorre-iot/buntdb"
+	"fmt"
+	"github.com/go-redis/redis"
 )
+
+
+// RTDB Real Time DB Class
+type RTDB struct {
+	hostName		string
+	port			int
+	userName 		string
+	password		string
+	defaultDB		int
+	client			*redis.Client
+	isConnected		bool
+	jsonField		string
+}
 
 var (
 )
-// OpenRTDB opens the realTimeDB
-func OpenRTDB(persistenceFileName string) (*buntdb.DB, error) {
-	db, err := buntdb.Open(persistenceFileName)
-	return db, err
+// RTDBNew creates a new RT DB connection object
+func (rtdb *RTDB) RTDBNew (hostName string, port int, userName string, password string, defaultDB int, jsonField string) {
+	rtdb.hostName = hostName
+	rtdb.port = port
+	rtdb.userName = userName
+	rtdb.password = password
+	rtdb.defaultDB = defaultDB
+	rtdb.client = nil
+	rtdb.isConnected = false
+	rtdb.jsonField = jsonField
 }
 
-// CloseRTDB closes a previously opened RTDB
-func  CloseRTDB(db *buntdb.DB) error {
-	var err error
-	if (db != nil) {
-		err = db.Close()
+// OpenRTDB opens the Real Time DB
+func (rtdb *RTDB) OpenRTDB() error {
+
+	client := redis.NewClient(&redis.Options{
+		Addr:     fmt.Sprintf("%s:%d", rtdb.hostName, rtdb.port),
+		Password: rtdb.password, 
+		DB:       rtdb.defaultDB,
+	})
+
+	_, err := client.Ping().Result()
+
+	if err != nil {
+		return err
 	}
-	return err
+
+	rtdb.client = client
+	rtdb.isConnected = true
+	return nil
 }
+
+// CloseRTDB closes the RealTime DB
+func (rtdb *RTDB) CloseRTDB() error {
+	return rtdb.client.Close()
+}
+
+// IsRTDBConnected checks if RTDB is connected
+func (rtdb *RTDB) IsRTDBConnected() bool {
+	return rtdb.isConnected 
+}
+
 
 // GetRTPObject get RTpObject form RTDB (if exists)
-func GetRTPObject(db *buntdb.DB, key string) (KXRTPObject, error) {
+func (rtdb *RTDB) GetRTPObject(key string) (KXRTPObject, error) {
 	var rtpObject KXRTPObject
-	jsonStr, err := GetValueFromKey(db, key)
+	jsonStr, err := rtdb.GetValueFromKey(key)
 	if (err == nil) {
 		err = rtpObject.Deserialize(jsonStr)
 	}
 	return rtpObject, err
 }
+
 // UpdateRTPObject updates RTPObject into RTDB
-func UpdateRTPObject (db *buntdb.DB, key string, rtpObject KXRTPObject) error {
+func (rtdb *RTDB) UpdateRTPObject (key string, rtpObject KXRTPObject) error {
 	jsonStr, err := rtpObject.Serialize()
 	if err == nil {
-		err = SetValueForKey(db, key, jsonStr)
+		err = rtdb.SetValueForKey(key, jsonStr)
 	}
 	return err
 }
 
 // SetValueForKey updates db value for a key 
-func SetValueForKey(db *buntdb.DB, key string, value string) error {
-	err := db.Update(func(tx *buntdb.Tx) error {
-		_, _, err := tx.Set(key, value, nil)
-		return err
-	})
-	return err
+func (rtdb *RTDB) SetValueForKey(key string, value string) error {
+	
+	boolCmd := rtdb.client.HSet(key, rtdb.jsonField, value)
+	return boolCmd.Err()
 }
 
 // GetValueFromKey queries a value from key
-func GetValueFromKey (db *buntdb.DB, key string) (string, error) {
-	var result string
-	err := db.View(
-		
-		func(tx *buntdb.Tx) error {
-			val, err := tx.Get(key)
-			if err != nil{
-				return err
-			}
-			result = val
-			return nil
-	})
-	return result, err
+func (rtdb *RTDB) GetValueFromKey (key string) (string, error) {
+	stringCmd := rtdb.client.HGet(key, rtdb.jsonField)
+	return stringCmd.Result()
 }
-
-// CompactDB will make the database file smaller by removing redundant log entries
-func CompactDB(db *buntdb.DB) error {
-	return db.Shrink()
-}  

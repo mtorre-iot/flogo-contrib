@@ -11,7 +11,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
+	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 )
@@ -193,18 +193,26 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	val := context.GetInput(ivOutputTags)
 	outputTags := val.(map[string]string)
 	outputObjs := make(map[string] KXRTPObject)
-	//
-	// Open the RealTime DB
-	//
-	db, err := OpenRTDB(rtdbFile)
+	// decode (unmarshall) the RTDB server pars
+	rtdbPars := strings.Split(rtdbFile,":")
+	// create the realtime DB access object
+	var rtdb RTDB
+	port, err := strconv.Atoi(rtdbPars[1])
 	if err != nil {
-		activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
 		return false, err
 	}
+	rtdb.RTDBNew(rtdbPars[0], port, rtdbPars[2],rtdbPars[3], 0, "json") 
+	// Open the RealTime DB
+	err = rtdb.OpenRTDB()
+	if err != nil {
+		activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
+	return false, err
+	}
 	// make sure it closes after finish
-	defer CloseRTDB(db)
+	defer rtdb.CloseRTDB()
+
 	for _, tag := range outputTags {
-		outputObjs[tag], err = GetRTPObject(db, tag)
+		outputObjs[tag], err = rtdb.GetRTPObject(tag)
 		if (err != nil)	{
 			activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", tag, err))
 			return false, err
