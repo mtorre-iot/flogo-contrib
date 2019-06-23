@@ -1,4 +1,4 @@
-package kxrest
+package kxcommon
 
 import (
 	"fmt"
@@ -32,14 +32,14 @@ type RtAvg struct {
 }
 
 // DecodeUpdateMessage get messages coming from a KXDataProc
-func DecodeUpdateMessage (message string) []KXRTPObject {
+func DecodeUpdateMessage (message string) (KXRTPObject, error) {
 
-	var updateMessage []KXRTPObject 
+	var updateMessage KXRTPObject 
 	// decode message
 	if err := json.Unmarshal([]byte(message), &updateMessage); err != nil {
-		return nil
+		return KXRTPObject{}, err
 	}
-	return updateMessage
+	return updateMessage, nil
 }
 // Scan message Types
 
@@ -202,3 +202,13 @@ func AnalyticsArgNew (name string, value string, quality string) AnalyticsArg {
 	return AnalyticsArg {name, value, quality}
 }
 
+func Mapkey(m map[string]string, value string) (key string, ok bool) {
+	for k, v := range m {
+	  if v == value { 
+		key = k
+		ok = true
+		return
+	  }
+	}
+	return
+  }

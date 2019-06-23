@@ -14,6 +14,7 @@ import (
 	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
+	"github.com/mtorre-iot/flogo-contrib/activity/kxcommon"
 )
 
 // log is the default package logger
@@ -192,11 +193,11 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	val := context.GetInput(ivOutputTags)
 	outputTags := val.(map[string]string)
-	outputObjs := make(map[string] KXRTPObject)
+	outputObjs := make(map[string] kxcommon.KXRTPObject)
 	// decode (unmarshall) the RTDB server pars
 	rtdbPars := strings.Split(rtdbFile,":")
 	// create the realtime DB access object
-	var rtdb RTDB
+	var rtdb kxcommon.RTDB
 	port, err := strconv.Atoi(rtdbPars[1])
 	if err != nil {
 		return false, err

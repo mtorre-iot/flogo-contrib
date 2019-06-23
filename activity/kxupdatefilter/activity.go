@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
+	"github.com/mtorre-iot/flogo-contrib/activity/kxcommon"
 )
 
 // activityLog is the default logger for the Log Activity
@@ -56,11 +57,11 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 	var inputValues map[string]float64
 
-	var inputObjs map[string]KXRTPObject 
+	var inputObjs map[string]kxcommon.KXRTPObject 
 	//
 	// decode it from Json
 	//
-	rtPObject, err := DecodeUpdateMessage(message)
+	rtPObject, err := kxcommon.DecodeUpdateMessage(message)
 	if (err != nil) {
 		return false, errors.New("Incoming message could not be deserialized. Message: " + message)
 	}
@@ -69,10 +70,10 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//
 	foundTrig:= false
 	inputValues = make(map[string]float64)
-	inputObjs = make(map[string]KXRTPObject)
+	inputObjs = make(map[string]kxcommon.KXRTPObject)
 
 	for _,tag := range inputTags {
-			inputObjs[tag] = KXRTPObject{}
+			inputObjs[tag] = kxcommon.KXRTPObject{}
 			inputValues[tag] = 0.0
 	}
 
@@ -94,7 +95,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		// decode (unmarshall) the RTDB server pars
 		rtdbPars := strings.Split(rtdbFile,":")
 		// create the realtime DB access object
-		var rtdb RTDB
+		var rtdb kxcommon.RTDB
 		port, err := strconv.Atoi(rtdbPars[1])
 		if err != nil {
 			return false, err
