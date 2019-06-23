@@ -186,7 +186,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 
 	activityLog.Debug("response Body:", result)
 
-	var resultx AnalyticsResponse
+	var resultx kxcommon.AnalyticsResponse
 	json.Unmarshal(respBody, &resultx)
 	//
 	// Get the Output object
@@ -222,12 +222,12 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	// Create the json scan message back to KXDataproc
 	//
-	scanMessage := ScanMessageNew()
+	scanMessage := kxcommon.ScanMessageNew()
 	for _,res := range resultx.Results {
-		smu := ScanMessageUnitNew(outputObjs[outputTags[res.Name]].ID, outputTags[res.Name], res.Value, QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
+		smu := kxcommon.ScanMessageUnitNew(outputObjs[outputTags[res.Name]].ID, outputTags[res.Name], res.Value, kxcommon.QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
 		scanMessage.ScanMessageAdd(smu)
 	}
-	jsonMessage, err := SerializeObject(scanMessage)
+	jsonMessage, err := kxcommon.SerializeObject(scanMessage)
 	if err != nil {
 		activityLog.Error(fmt.Sprintf("Error trying to serialize output message. Error %s", err))
 		return false, err

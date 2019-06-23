@@ -122,15 +122,15 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		//
 		// We should have the input values. Let's to create the output argument message
 		//
-		args:= [] AnalyticsArg{}
+		args:= [] kxcommon.AnalyticsArg{}
 		for _, pobj := range inputObjs {
-			key,_ := Mapkey(inputTags, pobj.Tag)
-			args = append(args, AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
+			key,_ := kxcommon.Mapkey(inputTags, pobj.Tag)
+			args = append(args, kxcommon.AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
 		}
 
-		request := AnalyticsRequestNew(functionName, args)
+		request := kxcommon.AnalyticsRequestNew(functionName, args)
 
-		requestJson, err := SerializeObject(request)
+		requestJson, err := kxcommon.SerializeObject(request)
 		if (err != nil) {
 			activityLog.Error(fmt.Sprintf("Error trying to serialize analytics request message. Error %s", err))
 			return false, err
