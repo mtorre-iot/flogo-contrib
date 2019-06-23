@@ -224,7 +224,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	//
 	scanMessage := kxcommon.ScanMessageNew()
 	for _,res := range resultx.Results {
-		smu := kxcommon.ScanMessageUnitNew(outputObjs[outputTags[res.Name]].ID, outputTags[res.Name], res.Value, kxcommon.QualityOk.String(), MessageUnitTypeValue, time.Now().UTC())
+		smu := kxcommon.ScanMessageUnitNew(outputObjs[outputTags[res.Name]].ID, outputTags[res.Name], res.Value, kxcommon.QualityOk.String(), kxcommon.MessageUnitTypeValue, time.Now().UTC())
 		scanMessage.ScanMessageAdd(smu)
 	}
 	jsonMessage, err := kxcommon.SerializeObject(scanMessage)
