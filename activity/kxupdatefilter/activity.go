@@ -51,7 +51,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	val := context.GetInput(ivInputTags)
 	inputTagsInterface := val.(map[string]interface{})
 	inputTags := make(map[string]string) 
-	
+
     for key, value := range inputTagsInterface {
         strKey := fmt.Sprintf("%v", key)
         strValue := fmt.Sprintf("%v", value)
@@ -61,7 +61,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 	functionName := context.GetInput(ivFunctionName).(string)
 	if functionName == "" {
-		return false, errors.New("a function name must be provided")
+		return false, errors.New("[kxupdatefilter] A function name must be provided")
 	}
 
 	var inputValues map[string]float64
@@ -72,7 +72,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	//
 	rtPObject, err := kxcommon.DecodeUpdateMessage(message)
 	if (err != nil) {
-		return false, errors.New("Incoming message could not be deserialized. Message: " + message)
+		return false, errors.New("[kxupdatefilter] Incoming message could not be deserialized. Message: " + message + "Error: " + err.Error())
 	}
 	//
 	// test - print the tags
@@ -87,7 +87,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	}
 
 	if rtPObject.Tag == triggerTag {
-		activityLog.Info(fmt.Sprintf("Found %s in the trigger!", triggerTag))
+		activityLog.Info(fmt.Sprintf("[kxupdatefilter] Found %s in the trigger!", triggerTag))
 		foundTrig = true
 	} 
 
@@ -113,7 +113,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 		// Open the RealTime DB
 		err = rtdb.OpenRTDB()
 		if err != nil {
-			activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
+			activityLog.Error(fmt.Sprintf("[kxupdatefilter] Realtime Database could not be opened. Error %s", err))
 			return false, err
 		}
 		// make sure it closes after finish
@@ -123,7 +123,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			if pobj.Tag == "" {
 				inputObjs[key], err = rtdb.GetRTPObject(key)
 				if (err != nil)	{
-					activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", key, err))
+					activityLog.Error(fmt.Sprintf("[kxupdatefilter] Tag: %s could not be accessed from Realtime Database. Error %s", key, err))
 					return false, err
 				}
 			}
@@ -141,10 +141,10 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 
 		requestJson, err := kxcommon.SerializeObject(request)
 		if (err != nil) {
-			activityLog.Error(fmt.Sprintf("Error trying to serialize analytics request message. Error %s", err))
+			activityLog.Error(fmt.Sprintf("[kxupdatefilter] Error trying to serialize analytics request message. Error %s", err))
 			return false, err
 		}
-		activityLog.Info(fmt.Sprintf("Output Message: %s", requestJson))
+		activityLog.Info(fmt.Sprintf("[kxupdatefilter] Output Message: %s", requestJson))
 		context.SetOutput(ovOutput, requestJson)
 	}
 	return foundTrig, nil
