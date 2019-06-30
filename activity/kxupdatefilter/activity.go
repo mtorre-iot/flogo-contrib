@@ -52,8 +52,8 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	inputTagsInterface := val.(map[string]interface{})
 	inputTags := make(map[string]string) 
 
-    for key, value := range inputTagsInterface {
-        strKey := fmt.Sprintf("%v", key)
+	for key, value := range inputTagsInterface {
+    	strKey := fmt.Sprintf("%v", key)
         strValue := fmt.Sprintf("%v", value)
 
         inputTags[strKey] = strValue
