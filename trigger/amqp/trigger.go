@@ -334,6 +334,8 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 		log.Error("[amqp] Error starting action: ", err.Error())
 	}
 
+	log.Infof("Ran Handler: [%s]", handler)
+
 	var replyData interface{}
 
 	if len(results) != 0 {
