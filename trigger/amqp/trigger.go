@@ -104,7 +104,7 @@ func (t *AmqpTrigger) Initialize(ctx trigger.InitContext) error {
 func (t *AmqpTrigger) checkParameter(attribute string) (string, error) {
 	param := t.config.GetSetting(attribute)
 	if param == "" {
-		errMsg := fmt.Sprintf("Setting '%s' not found.", attribute) 
+		errMsg := fmt.Sprintf("[amqp] Setting '%s' not found.", attribute) 
 		return param, errors.New(errMsg)
 	}
 	return param, nil
@@ -114,7 +114,7 @@ func (t *AmqpTrigger) checkParameter(attribute string) (string, error) {
 func (t *AmqpTrigger) Start() error {
 	//
 	if t.config.Settings == nil {
-		errMsg := fmt.Sprintf("No Settings found for trigger '%s'", t.config.Id) 
+		errMsg := fmt.Sprintf("[amqp] No Settings found for trigger '%s'", t.config.Id) 
 		log.Error(errMsg)
 		return errors.New(errMsg)
 	}
@@ -128,7 +128,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	requestPort, err := strconv.Atoi(requestPortStr)
 	if err != nil {
-		log.Error("Request Exchange: Error converting \"Port\" to an integer ", err.Error())
+		log.Error("[amqp] Request Exchange: Error converting \"Port\" to an integer ", err.Error())
 		return err
 	}
 	requestExchangeName, err:= t.checkParameter(rqExchangeName)
@@ -159,7 +159,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	requestReliable, err := data.CoerceToBoolean(requestReliableStr)
 	if err != nil {
-		log.Warn("Request Exchange: Error converting \"Reliable\" to a boolean. Assuming default (false).")
+		log.Warn("[amqp] Request Exchange: Error converting \"Reliable\" to a boolean. Assuming default (false).")
 		requestReliable = false
 	}
 	requestDurableStr, err := t.checkParameter(rqDurable)
@@ -168,7 +168,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	requestDurable, err := data.CoerceToBoolean(requestDurableStr)
 	if err != nil {
-		log.Warn("Request Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
+		log.Warn("[amqp] Request Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		requestDurable = false
 	}
 	requestAutoDeleteStr, err := t.checkParameter(rqAutoDelete)
@@ -177,7 +177,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	requestAutoDelete, err := data.CoerceToBoolean(requestAutoDeleteStr)
 	if err != nil {
-		log.Warn("Request Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
+		log.Warn("[amqp] Request Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
 		requestAutoDelete = true
 	}
 
@@ -189,7 +189,7 @@ func (t *AmqpTrigger) Start() error {
 	if (responsePortStr != "") {
 		responsePort, err = strconv.Atoi(responsePortStr)
 		if err != nil {
-			log.Error("Response Exchange: Error converting \"Port\" to an integer ", err.Error())
+			log.Error("[amqp] Response Exchange: Error converting \"Port\" to an integer ", err.Error())
 			return err
 		}
 	}
@@ -205,7 +205,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	responseReliable, err := data.CoerceToBoolean(responseReliableStr)
 	if err != nil {
-		log.Debug("Response Exchange: Error converting \"Reliable\" to a boolean. Assuming default (true).")
+		log.Debug("[amqp] Response Exchange: Error converting \"Reliable\" to a boolean. Assuming default (true).")
 		responseReliable = true
 	}
 	responseDurableStr, err := t.checkParameter(rqDurable)
@@ -214,7 +214,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	responseDurable, err := data.CoerceToBoolean(responseDurableStr)
 	if err != nil {
-		log.Debug("Response Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
+		log.Debug("[amqp] Response Exchange: Error converting \"Durable\" to a boolean. Assuming default (false).")
 		responseDurable = false
 	}
 	responseAutoDeleteStr, err := t.checkParameter(rsAutoDelete)
@@ -223,7 +223,7 @@ func (t *AmqpTrigger) Start() error {
 	}
 	responseAutoDelete, err := data.CoerceToBoolean(responseAutoDeleteStr)
 	if err != nil {
-		log.Debug("Response Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
+		log.Debug("[amqp] Response Exchange: Error converting \"AutoDelete\" to a boolean. Assuming default (true).")
 		responseAutoDelete = true
 	}
 	//
@@ -242,7 +242,7 @@ func (t *AmqpTrigger) Start() error {
 		requestReliable)
 
 	if t.reqExch == nil {
-		errMsg := fmt.Sprintf("Request Exchange: Unable to Create Exchange Object: %s", t.reqExch.ExchangeName)
+		errMsg := fmt.Sprintf("[amqp] Request Exchange: Unable to Create Exchange Object: %s", t.reqExch.ExchangeName)
 		log.Error(errMsg)
 		return errors.New(errMsg)
 	}
@@ -250,14 +250,14 @@ func (t *AmqpTrigger) Start() error {
 	// Create the AMQP Request Exchange
 	//
 	if err := t.reqExch.Open(true); err != nil {
-		log.Errorf("Request Exchange: Unable to Open Exchange: %s : %s", t.reqExch.ExchangeName, err)
+		log.Errorf("[amqp] Request Exchange: Unable to Open Exchange: %s : %s", t.reqExch.ExchangeName, err)
 		return err
 	}
 	//
 	// Prepare to receive
 	//
 	if err := t.reqExch.PrepareReceiveFunc(t.receiverHandler); err != nil {
-		log.Errorf("Request Exchange: Unable to Prepare: %s to Receive. Error: %s. Bail out", err)
+		log.Errorf("[amqp] Request Exchange: Unable to Prepare: %s to Receive. Error: %s. Bail out", err)
 		return err
 	}
 	//
@@ -277,7 +277,7 @@ func (t *AmqpTrigger) Start() error {
 			responseReliable)
 
 		if t.resExch == nil {
-			errMsg := fmt.Sprintf("Response Exchange: Unable to Create Exchange Object: %s", t.resExch.ExchangeName)
+			errMsg := fmt.Sprintf("[amqp] Response Exchange: Unable to Create Exchange Object: %s", t.resExch.ExchangeName)
 			log.Error(errMsg)
 			return errors.New(errMsg)
 		}
@@ -285,7 +285,7 @@ func (t *AmqpTrigger) Start() error {
 		// Create the AMQP Response Exchange
 		//
 		if err := t.resExch.Open(false); err != nil {
-			log.Errorf("Response Exchange: Unable to Open Exchange: %s : %s", t.resExch.ExchangeName, err)
+			log.Errorf("[amqp] Response Exchange: Unable to Open Exchange: %s : %s", t.resExch.ExchangeName, err)
 			return err
 		}
 	}
@@ -301,7 +301,7 @@ func (t *AmqpTrigger) Start() error {
 func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		payload := fmt.Sprintf("%s", d.Body)
-		log.Debugf("Message received: %s", payload)
+		log.Infof("[amqp] Message received: %s", payload)
 		topic := fmt.Sprintf("%s", d.RoutingKey)
 		handler, found := t.topicToHandler[topic]
 		handlerDef, foundDef := t.topicToHandler["#"]
@@ -310,7 +310,7 @@ func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 		} else if foundDef {
 			t.RunHandler(handlerDef, payload)
 		} else {
-			log.Warnf("handler for topic '%s' not found", topic)
+			log.Warnf("[amqp] Handler for topic '%s' not found", topic)
 		}
 	}
 }
@@ -331,7 +331,7 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 	results, err := handler.Handle(context.Background(), trgData)
 
 	if err != nil {
-		log.Error("Error starting action: ", err.Error())
+		log.Error("[amqp] Error starting action: ", err.Error())
 	}
 
 	var replyData interface{}
@@ -354,12 +354,12 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 
 func (t *AmqpTrigger) publishMessage(message string) {
 
-	log.Info("Replying message: ", message)
+	log.Info("[amqp] Replying message: ", message)
 
 	err := t.resExch.Publish(message)
 	if err != nil {
 		// Timeout occurred
-		log.Errorf("Error occurred while trying to publish to Exchange '%s'", t.resExch.ExchangeName)
+		log.Errorf("[amqp] Error occurred while trying to publish to Exchange '%s'", t.resExch.ExchangeName)
 		return
 	}
 }
@@ -383,13 +383,13 @@ func buildURI(hostName string, port int, userName string, password string) strin
 func (exch *AMQPExchange) Open(isQueued bool) error {
 	conn, err := amqp.Dial(exch.Uri)
 	if err != nil {
-		return fmt.Errorf("Connection: %s", err)
+		return fmt.Errorf("[amqp] Connection: %s", err)
 	}
 	exch.Connection = conn
 	chn, err := exch.Connection.Channel()
 	if err != nil {
 		exch.Connection.Close()
-		return fmt.Errorf("Channel: %s", err)
+		return fmt.Errorf("[amqp] Channel: %s", err)
 	}
 	exch.Channel = chn
 	if err := exch.Channel.ExchangeDeclare(
@@ -405,7 +405,7 @@ func (exch *AMQPExchange) Open(isQueued bool) error {
 		exch.Channel = nil
 		exch.Connection = nil
 		exch.IsOpen = false
-		return fmt.Errorf("Exchange Declare: %s", err)
+		return fmt.Errorf("[amqp] Exchange Declare: %s", err)
 	}
 	if exch.Reliable {
 		if err := exch.Channel.Confirm(false); err != nil {
@@ -413,7 +413,7 @@ func (exch *AMQPExchange) Open(isQueued bool) error {
 			exch.Channel = nil
 			exch.Connection = nil
 			exch.IsOpen = false
-			return fmt.Errorf("Channel could not be put into confirm mode: %s", err)
+			return fmt.Errorf("[amqp] hannel could not be put into confirm mode: %s", err)
 		}
 		confirms := exch.Channel.NotifyPublish(make(chan amqp.Confirmation, 1))
 		exch.Confirms = confirms
@@ -433,7 +433,7 @@ func (exch *AMQPExchange) Open(isQueued bool) error {
 			exch.Channel = nil
 			exch.Connection = nil
 			exch.IsOpen = false
-			return fmt.Errorf("Queue Declare: %s", err)
+			return fmt.Errorf("[amqp] Queue Declare: %s", err)
 		}
 
 		if err = exch.Channel.QueueBind(
@@ -447,7 +447,7 @@ func (exch *AMQPExchange) Open(isQueued bool) error {
 			exch.Channel = nil
 			exch.Connection = nil
 			exch.IsOpen = false
-			return fmt.Errorf("Queue Bind: %s", err)
+			return fmt.Errorf("[amqp] Queue Bind: %s", err)
 		}
 		exch.Queue = &queue
 	}
@@ -458,13 +458,13 @@ func (exch *AMQPExchange) Open(isQueued bool) error {
 // Close closes the exchange
 func (exch *AMQPExchange) Close() error {
 	if (exch.Connection == nil) || (exch.IsOpen == false) {
-		return fmt.Errorf("Connection for exchange: " + exch.ExchangeName + " was not open")
+		return fmt.Errorf("[amqp] Connection for exchange: " + exch.ExchangeName + " was not open")
 	}
 	if err := exch.Channel.Close(); err != nil {
-		return fmt.Errorf("Channel for exchange: " + exch.ExchangeName + " couldn't be closed")
+		return fmt.Errorf("[amqp] Channel for exchange: " + exch.ExchangeName + " couldn't be closed")
 	}
 	if err := exch.Connection.Close(); err != nil {
-		return fmt.Errorf("Connection for exchange: " + exch.ExchangeName + " couldn't be closed")
+		return fmt.Errorf("[amqp] Connection for exchange: " + exch.ExchangeName + " couldn't be closed")
 	}
 	exch.Channel = nil
 	exch.Connection = nil
@@ -485,7 +485,7 @@ func (exch *AMQPExchange) PublishObject(obj interface{}) error {
 func (exch *AMQPExchange) Publish(body string) error {
 
 	if (exch.Connection == nil) || (exch.IsOpen == false) {
-		return fmt.Errorf("Connection for exchange: " + exch.ExchangeName + " is not open")
+		return fmt.Errorf("[amqp] Connection for exchange: " + exch.ExchangeName + " is not open")
 	}
 
 	if err := exch.Channel.Publish(
@@ -504,13 +504,13 @@ func (exch *AMQPExchange) Publish(body string) error {
 	); err != nil {
 		exch.Connection.Close()
 		exch.IsOpen = false
-		return fmt.Errorf("Exchange Publish: %s", err)
+		return fmt.Errorf("[amqp] Exchange Publish: %s", err)
 	}
 	// Reliable publisher confirms require confirm.select support from the
 	// connection.
 	if exch.Reliable {
 		if cf := confirmOne(exch.Confirms); cf == false {
-			return fmt.Errorf("Publish was not confirmed")
+			return fmt.Errorf("[amqp] Publish was not confirmed")
 		}
 	}
 	return nil
@@ -533,7 +533,7 @@ func (exch *AMQPExchange) PrepareReceiveFunc(f func(msgs <-chan amqp.Delivery)) 
 		exch.Channel = nil
 		exch.Connection = nil
 		exch.IsOpen = false
-		return fmt.Errorf("Exchange PrepareReceiveFunc: %s", err)
+		return fmt.Errorf("[amqp] Exchange PrepareReceiveFunc: %s", err)
 	}
 	//go receiverTask(exch, msgs)
 	go f(msgs)
