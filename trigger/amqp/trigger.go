@@ -307,8 +307,10 @@ func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 		log.Infof("[amqp] topic: %s", topic)
 		handlerDef, foundDef := t.topicToHandler["#"]
 		if found {
+			log.Infof("[amqp] found")
 			t.RunHandler(handler, payload)
 		} else if foundDef {
+			log.Infof("[amqp] not found")
 			t.RunHandler(handlerDef, payload)
 		} else {
 			log.Warnf("[amqp] Handler for topic '%s' not found", topic)
