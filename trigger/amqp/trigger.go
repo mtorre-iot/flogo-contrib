@@ -290,7 +290,7 @@ func (t *AmqpTrigger) Start() error {
 		}
 	}
 	t.topicToHandler = make(map[string]*trigger.Handler)
-
+	
 	for _, handler := range t.handlers {
 		topic := handler.GetStringSetting("topic")
 		t.topicToHandler[topic] = handler
