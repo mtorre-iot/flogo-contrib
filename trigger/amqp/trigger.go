@@ -118,6 +118,14 @@ func (t *AmqpTrigger) Start() error {
 		log.Error(errMsg)
 		return errors.New(errMsg)
 	}
+
+	t.topicToHandler = make(map[string]*trigger.Handler)
+	var topic string
+	for _, handler := range t.handlers {
+		topic = handler.GetStringSetting("topic")
+		t.topicToHandler[topic] = handler
+	}
+
 	requestHostName, err := t.checkParameter(rqHostName)
 	if err != nil {
 		return err
@@ -141,10 +149,10 @@ func (t *AmqpTrigger) Start() error {
 	if err != nil {
 		return err
 	}
-	requestRoutingKey, err := t.checkParameter(rqRoutingKey)
+/* 	requestRoutingKey, err := t.checkParameter(rqRoutingKey)
 	if err != nil {
 		return err
-	}
+	} */
 	requestUser, err := t.checkParameter(rqUser);
 	if err != nil {
 		return err
@@ -234,7 +242,7 @@ func (t *AmqpTrigger) Start() error {
 		requestExchangeName,
 		requestExchangeType,
 		requestQueueName,
-		requestRoutingKey,
+		topic,
 		requestUser,
 		requestPassword,
 		requestDurable,
@@ -288,12 +296,6 @@ func (t *AmqpTrigger) Start() error {
 			log.Errorf("[amqp] Response Exchange: Unable to Open Exchange: %s : %s", t.resExch.ExchangeName, err)
 			return err
 		}
-	}
-	t.topicToHandler = make(map[string]*trigger.Handler)
-	
-	for _, handler := range t.handlers {
-		topic := handler.GetStringSetting("topic")
-		t.topicToHandler[topic] = handler
 	}
 	return nil
 }
