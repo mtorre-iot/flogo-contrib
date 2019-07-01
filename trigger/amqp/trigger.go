@@ -301,9 +301,10 @@ func (t *AmqpTrigger) Start() error {
 func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		payload := fmt.Sprintf("%s", d.Body)
-		log.Infof("[amqp] Message received: %s", payload)
+		log.Debugf("[amqp] Message received: %s", payload)
 		topic := fmt.Sprintf("%s", d.RoutingKey)
 		handler, found := t.topicToHandler[topic]
+		log.Infof("[amqp] topic: %s", topic)
 		handlerDef, foundDef := t.topicToHandler["#"]
 		if found {
 			t.RunHandler(handler, payload)
@@ -327,7 +328,6 @@ func (t *AmqpTrigger) Stop() error {
 func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 	trgData := make(map[string]interface{})
 	trgData["message"] = payload
-	log.Infof("Message: [%s]", payload)
 	
 	results, err := handler.Handle(context.Background(), trgData)
 
