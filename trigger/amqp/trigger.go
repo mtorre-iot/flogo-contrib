@@ -301,7 +301,7 @@ func (t *AmqpTrigger) Start() error {
 func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		payload := fmt.Sprintf("%s", d.Body)
-		log.Debugf("[amqp] Message received: %s", payload)
+		log.Infof("[amqp] Message received: %s", payload)
 		handler, found := t.topicToHandler[routingKey]
 		if found {
 			t.RunHandler(handler, payload)
