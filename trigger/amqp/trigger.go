@@ -76,6 +76,9 @@ type AmqpTrigger struct {
 	resExch        *AMQPExchange
 }
 
+var (
+	routingKey string
+)
 //NewFactory create a new Trigger factory
 func NewFactory(md *trigger.Metadata) trigger.Factory {
 	return &AMQPFactory{metadata: md}
@@ -120,7 +123,6 @@ func (t *AmqpTrigger) Start() error {
 	}
 
 	t.topicToHandler = make(map[string]*trigger.Handler)
-	var routingKey string
 	for _, handler := range t.handlers {
 		routingKey = handler.GetStringSetting("routingKey")
 		t.topicToHandler[routingKey] = handler
@@ -300,16 +302,11 @@ func (t *AmqpTrigger) receiverHandler(msgs <-chan amqp.Delivery) {
 	for d := range msgs {
 		payload := fmt.Sprintf("%s", d.Body)
 		log.Debugf("[amqp] Message received: %s", payload)
-		topic := fmt.Sprintf("%s", d.RoutingKey)
-		handler, found := t.topicToHandler[topic]
-		log.Infof("[amqp] topic: %s", topic)
-		handlerDef, foundDef := t.topicToHandler["#"]
+		handler, found := t.topicToHandler[routingKey]
 		if found {
 			t.RunHandler(handler, payload)
-		} else if foundDef {
-			t.RunHandler(handlerDef, payload)
 		} else {
-			log.Warnf("[amqp] Handler for topic '%s' not found", topic)
+			log.Warnf("[amqp] Handler for Routing Key '%s' not found", routingKey)
 		}
 	}
 }
