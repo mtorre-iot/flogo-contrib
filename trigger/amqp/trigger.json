@@ -29,7 +29,7 @@
       "name": "requestExchangeType",
       "type": "string",
       "value": "topic",
-      "required": false
+      "required": true
     },
     {
       "name": "requestUser",
