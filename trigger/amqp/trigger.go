@@ -120,10 +120,10 @@ func (t *AmqpTrigger) Start() error {
 	}
 
 	t.topicToHandler = make(map[string]*trigger.Handler)
-	var topic string
+	var routingKey string
 	for _, handler := range t.handlers {
-		topic = handler.GetStringSetting("topic")
-		t.topicToHandler[topic] = handler
+		routingKey = handler.GetStringSetting("routingKey")
+		t.topicToHandler[routingKey] = handler
 	}
 
 	requestHostName, err := t.checkParameter(rqHostName)
@@ -149,10 +149,6 @@ func (t *AmqpTrigger) Start() error {
 	if err != nil {
 		return err
 	}
-/* 	requestRoutingKey, err := t.checkParameter(rqRoutingKey)
-	if err != nil {
-		return err
-	} */
 	requestUser, err := t.checkParameter(rqUser);
 	if err != nil {
 		return err
@@ -242,7 +238,7 @@ func (t *AmqpTrigger) Start() error {
 		requestExchangeName,
 		requestExchangeType,
 		requestQueueName,
-		topic,
+		routingKey,
 		requestUser,
 		requestPassword,
 		requestDurable,
