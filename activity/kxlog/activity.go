@@ -1,4 +1,4 @@
-package log
+package kxlog
 
 import (
 	"fmt"
