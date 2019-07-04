@@ -41,7 +41,6 @@ var (
 	msgs           amqp.Delivery
 	msgsLock       sync.Mutex
 )
-
 //
 // AMQPExchange contains all parameters required to create or open an exchenge
 //
