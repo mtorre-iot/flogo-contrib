@@ -64,7 +64,7 @@ type AmqpActivity struct {
 }
 
 func init() {
-	activityLog.SetLogLevel(logger.InfoLevel)
+	activityLog.SetLogLevel(logger.DebugLevel)
 }
 
 // NewActivity creates a new AppActivity
