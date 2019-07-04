@@ -321,8 +321,7 @@ func (t *AmqpTrigger) Stop() error {
 // RunHandler runs the handler and associated action
 func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 	trgData := make(map[string]interface{})
-	//trgData["message"] = fmt.Sprintf("\"%s\"", payload)
-	trgData["message"] = fmt.Sprintf("%s", payload)
+	trgData["message"] = []byte(payload)
 
 	results, err := handler.Handle(context.Background(), trgData)
 
