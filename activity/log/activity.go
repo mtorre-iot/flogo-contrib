@@ -2,87 +2,69 @@ package log
 
 import (
 	"fmt"
-	"strconv"
 
-	"github.com/TIBCOSoftware/flogo-lib/core/activity"
-	"github.com/TIBCOSoftware/flogo-lib/logger"
-)
-
-// activityLog is the default logger for the Log Activity
-var activityLog = logger.GetLogger("activity-flogo-log")
-
-const (
-	ivMessage   = "message"
-	ivFlowInfo  = "flowInfo"
-	ivAddToFlow = "addToFlow"
-
-	ovMessage = "message"
+	"github.com/project-flogo/core/activity"
+	"github.com/project-flogo/core/data/coerce"
 )
 
 func init() {
-	activityLog.SetLogLevel(logger.InfoLevel)
+	_ = activity.Register(&Activity{})
 }
 
-// LogActivity is an Activity that is used to log a message to the console
+type Input struct {
+	Message    string `md:"message"`     // The message to log
+	AddDetails bool   `md:"addDetails"`  // Append contextual execution information to the log message
+}
+
+func (i *Input) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"message":    i.Message,
+		"addDetails": i.AddDetails,
+	}
+}
+
+func (i *Input) FromMap(values map[string]interface{}) error {
+
+	var err error
+	i.Message, err = coerce.ToString(values["message"])
+	if err != nil {
+		return err
+	}
+	i.AddDetails, err = coerce.ToBool(values["addDetails"])
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+var activityMd = activity.ToMetadata(&Input{})
+
+// Activity is an Activity that is used to log a message to the console
 // inputs : {message, flowInfo}
 // outputs: none
-type LogActivity struct {
-	metadata *activity.Metadata
-}
-
-// NewActivity creates a new AppActivity
-func NewActivity(metadata *activity.Metadata) activity.Activity {
-	return &LogActivity{metadata: metadata}
+type Activity struct {
 }
 
 // Metadata returns the activity's metadata
-func (a *LogActivity) Metadata() *activity.Metadata {
-	return a.metadata
+func (a *Activity) Metadata() *activity.Metadata {
+	return activityMd
 }
 
 // Eval implements api.Activity.Eval - Logs the Message
-func (a *LogActivity) Eval(context activity.Context) (done bool, err error) {
+func (a *Activity) Eval(ctx activity.Context) (done bool, err error) {
 
-	//mv := context.GetInput(ivMessage)
-	message, _ := context.GetInput(ivMessage).(string)
+	input := &Input{}
+	ctx.GetInputObject(input)
 
-	flowInfo, _ := toBool(context.GetInput(ivFlowInfo))
-	addToFlow, _ := toBool(context.GetInput(ivAddToFlow))
+	msg := input.Message
 
-	msg := message
-
-	if flowInfo {
-
-		msg = fmt.Sprintf("'%s' - FlowInstanceID [%s], Flow [%s], Task [%s]", msg,
-			context.ActivityHost().ID(), context.ActivityHost().Name(), context.Name())
+	if input.AddDetails {
+		msg = fmt.Sprintf("'%s' - HostID [%s], HostName [%s], Activity [%s]", msg,
+			ctx.ActivityHost().ID(), ctx.ActivityHost().Name(), ctx.Name())
 	}
 
-	activityLog.Info(msg)
-
-	if addToFlow {
-		context.SetOutput(ovMessage, msg)
-	}
+	ctx.Logger().Info(msg)
 
 	return true, nil
-}
-
-func toBool(val interface{}) (bool, error) {
-
-	b, ok := val.(bool)
-	if !ok {
-		s, ok := val.(string)
-
-		if !ok {
-			return false, fmt.Errorf("unable to convert to boolean")
-		}
-
-		var err error
-		b, err = strconv.ParseBool(s)
-
-		if err != nil {
-			return false, err
-		}
-	}
-
-	return b, nil
 }

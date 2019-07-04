@@ -1,70 +1,40 @@
 package log
 
 import (
-	"fmt"
-	"io/ioutil"
 	"testing"
 
-	"github.com/TIBCOSoftware/flogo-contrib/action/flow/test"
-	"github.com/TIBCOSoftware/flogo-lib/core/activity"
+	"github.com/project-flogo/core/activity"
+	"github.com/project-flogo/core/support/test"
+	"github.com/stretchr/testify/assert"
 )
 
-var activityMetadata *activity.Metadata
+func TestRegister(t *testing.T) {
 
-func getActivityMetadata() *activity.Metadata {
+	ref := activity.GetRef(&Activity{})
+	act := activity.Get(ref)
 
-	if activityMetadata == nil {
-		jsonMetadataBytes, err := ioutil.ReadFile("activity.json")
-		if err != nil {
-			panic("No Json Metadata found for activity.json path")
-		}
-
-		activityMetadata = activity.NewMetadata(string(jsonMetadataBytes))
-	}
-
-	return activityMetadata
-}
-
-func TestCreate(t *testing.T) {
-
-	act := NewActivity(getActivityMetadata())
-
-	if act == nil {
-		t.Error("Activity Not Created")
-		t.Fail()
-		return
-	}
+	assert.NotNil(t, act)
 }
 
 func TestEval(t *testing.T) {
 
-	act := NewActivity(getActivityMetadata())
-	tc := test.NewTestActivityContext(getActivityMetadata())
+	act := &Activity{}
+	tc := test.NewActivityContext(act.Metadata())
 
-	//setup attrs
-	tc.SetInput("message", "test message")
-	tc.SetInput("flowInfo", true)
+	input := &Input{Message: "test message", AddDetails: true}
+	tc.SetInputObject(input)
 
 	act.Eval(tc)
 }
 
 func TestAddToFlow(t *testing.T) {
 
-	act := NewActivity(getActivityMetadata())
-	tc := test.NewTestActivityContext(getActivityMetadata())
+	act := &Activity{}
+	tc := test.NewActivityContext(act.Metadata())
 
 	//setup attrs
 	tc.SetInput("message", "test message")
-	tc.SetInput("flowInfo", true)
-	tc.SetInput("addToFlow", true)
+	tc.SetInput("addDetails", true)
 
 	act.Eval(tc)
-
-	msg := tc.GetOutput("message")
-
-	fmt.Println("Message: ", msg)
-
-	if msg == nil {
-		t.Fail()
-	}
 }
