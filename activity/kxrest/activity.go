@@ -53,7 +53,7 @@ type KXRESTActivity struct {
 }
 
 func init() {
-	activityLog.SetLogLevel(logger.DebugLevel) 
+	activityLog.SetLogLevel(logger.InfoLevel) 
 }
 
 // NewActivity creates a new RESTActivity
