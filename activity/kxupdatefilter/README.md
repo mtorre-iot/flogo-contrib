@@ -1,17 +1,17 @@
 ---
-title: Log
+title: kxupdatefilter
 weight: 4615
 ---
 
 # Log
-This activity allows you to write log messages.
+This activity allows you decode knox Update messagess based on specific tagnames.
 
 ## Installation
 ### Flogo Web
-This activity comes out of the box with the Flogo Web UI
+This activity is part of the knox system
 ### Flogo CLI
 ```bash
-flogo add activity github.com/TIBCOSoftware/flogo-contrib/activity/log
+flogo add activity github.com/mtorre-iot/flogo-contrib/activity/kxupdatefilter
 ```
 
 ## Schema
@@ -19,54 +19,49 @@ Inputs and Outputs:
 
 ```json
 {
-  "input":[
+"input":[
     {
       "name": "message",
       "type": "string",
-      "value": ""
+      "value": "",
+      "required": true
     },
     {
-      "name": "flowInfo",
-      "type": "boolean",
-      "value": "false"
+      "name": "RTDBFile",
+      "type": "string",
+      "value": "",
+      "required": true
     },
     {
-      "name": "addToFlow",
-      "type": "boolean",
-      "value": "false"
+      "name": "triggerTag",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "inputTags",
+      "type": "params",
+      "required": true
+    },
+    {
+      "name": "functionName",
+      "type": "string",
+      "value": "",
+      "required": true
     }
+
   ],
   "output": [
     {
-      "name": "message",
+      "name": "outputStream",
       "type": "string"
     }
   ]
 }
 ```
 ## Settings
-| Setting     | Required | Description |
-|:------------|:---------|:------------|
-| message     | False    | The message to log |
-| flowInfo    | False    | If set to true this will append the flow information to the log message |
-| addToFlow   | False    | If set to true this will add the log message to the 'message' output of the activity and make it available in further activities |
-| message     | False    | The message that was logged |
-
 ## Examples
-The below example logs a message 'test message':
-
 ```json
 {
-  "id": "log_3",
-  "name": "Log Message",
-  "description": "Simple Log Activity",
-  "activity": {
-    "ref": "github.com/TIBCOSoftware/flogo-contrib/activity/log",
-    "input": {
-      "message": "test message",
-      "flowInfo": "false",
-      "addToFlow": "true"
-    }
-  }
 }
 ```

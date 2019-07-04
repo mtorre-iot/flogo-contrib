@@ -4,7 +4,7 @@
   "version": "0.9.0",
   "title": "Log",
   "description": "Logs a message",
-  "homepage": "https://github.com/mtorre-iot/flogo-contrib/activity/kxlog",
+  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxlog",
   "input":[
     {
       "name": "message",

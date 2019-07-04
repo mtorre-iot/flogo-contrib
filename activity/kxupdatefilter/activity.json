@@ -1,22 +1,48 @@
 {
-  "name": "flogo-log",
+  "name": "knox-kxupdatefilter",
   "type": "flogo:activity",
-  "version": "0.9.0",
-  "title": "Log",
-  "description": "Logs a message",
-  "homepage": "https://github.com/project-flogo/contrib/tree/master/activity/log",
+  "ref": "github.com/mtorre-iot/flogo-contrib/activity/kxupdatefilter",
+  "version": "0.0.1",
+  "title": "KNOX Update message filter",
+  "author": "Mario Torre <mtorre.work@gmail.com>",
+  "description": "KNOX Update message Decoder and filter",
+  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxupdatefilter",
   "input":[
     {
       "name": "message",
       "type": "string",
       "value": "",
-      "description": "The message to log"
+      "required": true
     },
     {
-      "name": "addDetails",
-      "type": "boolean",
-      "value": false,
-      "description": "Append contextual execution information to the log message"
+      "name": "RTDBFile",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "triggerTag",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "inputTags",
+      "type": "params",
+      "required": true
+    },
+    {
+      "name": "functionName",
+      "type": "string",
+      "value": "",
+      "required": true
+    }
+
+  ],
+  "output": [
+    {
+      "name": "outputStream",
+      "type": "string"
     }
   ]
 }
