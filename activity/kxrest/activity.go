@@ -192,7 +192,17 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	// Get the Output object
 	//
 	val := context.GetInput(ivOutputTags)
-	outputTags := val.(map[string]string)
+
+	outputTagsInterface := val.(map[string]interface{})
+	outputTags := make(map[string]string) 
+
+	for key, value := range outputTagsInterface {
+    	strKey := fmt.Sprintf("%v", key)
+        strValue := fmt.Sprintf("%v", value)
+
+        outputTags[strKey] = strValue
+    }
+
 	outputObjs := make(map[string] kxcommon.KXRTPObject)
 	// decode (unmarshall) the RTDB server pars
 	rtdbPars := strings.Split(rtdbFile,":")
