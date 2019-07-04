@@ -349,7 +349,7 @@ func (t *AmqpTrigger) RunHandler(handler *trigger.Handler, payload string) {
 
 func (t *AmqpTrigger) publishMessage(message string) {
 
-	log.Info("[amqp] Replying message: ", message)
+	log.Debug("[amqp] Replying message: ", message)
 
 	err := t.resExch.Publish(message)
 	if err != nil {

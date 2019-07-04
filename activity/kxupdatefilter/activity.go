@@ -87,7 +87,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 	}
 
 	if rtPObject.Tag == triggerTag {
-		activityLog.Info(fmt.Sprintf("[kxupdatefilter] Found %s in the trigger!", triggerTag))
+		activityLog.Debugf("[kxupdatefilter] Found %s in the trigger!", triggerTag)
 		foundTrig = true
 	} 
 
@@ -144,7 +144,7 @@ func (a *KXUpdateFilterActivity) Eval(context activity.Context) (done bool, err 
 			activityLog.Error(fmt.Sprintf("[kxupdatefilter] Error trying to serialize analytics request message. Error %s", err))
 			return false, err
 		}
-		activityLog.Info(fmt.Sprintf("[kxupdatefilter] Output Message: %s", requestJson))
+		activityLog.Debugf("[kxupdatefilter] Output Message: %s", requestJson)
 		context.SetOutput(ovOutput, requestJson)
 	}
 	return foundTrig, nil

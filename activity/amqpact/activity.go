@@ -79,7 +79,7 @@ func (a *AmqpActivity) Metadata() *activity.Metadata {
 func CheckParameter (context activity.Context, attribute string) (string, error) {
 	param := context.GetInput(attribute).(string)
 	if param == "" {
-		errMsg := fmt.Sprintf("Input '%s' not found.", attribute) 
+		errMsg := fmt.Sprintf("[amqpact] Input '%s' not found.", attribute) 
 		return param, errors.New(errMsg)
 	}
 	return param, nil
@@ -96,7 +96,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 	if (responsePortStr != "") {
 		responsePort, err = strconv.Atoi(responsePortStr)
 		if err != nil {
-			activityLog.Error(fmt.Sprintf("Response Exchange: Error converting \"Port\" to an integer. Error: %s", err.Error()))
+			activityLog.Error(fmt.Sprintf("[amqpact] Response Exchange: Error converting \"Port\" to an integer. Error: %s", err.Error()))
 			return false, err
 		}
 	}
@@ -130,7 +130,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 			responseReliable)
 
 		if a.resExch == nil {
-			errMsg := fmt.Sprintf("Response Exchange: Unable to Create Exchange Object: %s", a.resExch.ExchangeName)
+			errMsg := fmt.Sprintf("[amqpact] Response Exchange: Unable to Create Exchange Object: %s", a.resExch.ExchangeName)
 			activityLog.Error(fmt.Sprintf("%s", errMsg))
 			return false, errors.New(errMsg)
 		}
@@ -138,7 +138,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 		// Create the AMQP Response Exchange
 		//
 		if err := a.resExch.Open(false); err != nil {
-			activityLog.Error(fmt.Sprintf("Response Exchange: Unable to Open Exchange: %s : %s", a.resExch.ExchangeName, err))
+			activityLog.Error(fmt.Sprintf("[amqpact] Response Exchange: Unable to Open Exchange: %s : %s", a.resExch.ExchangeName, err))
 			return false, err
 		}
 		//
@@ -153,7 +153,7 @@ func (a *AmqpActivity) Eval(context activity.Context) (done bool, err error) {
 		// Close the Response Exchange
 		//
 		if err:= a.resExch.Close(); err != nil {
-			activityLog.Error(fmt.Sprintf("Response Exchange: Unable to Close Exchange: %s : %s", a.resExch.ExchangeName, err))
+			activityLog.Error(fmt.Sprintf("[amqpact] Response Exchange: Unable to Close Exchange: %s : %s", a.resExch.ExchangeName, err))
 			return false, err
 		}
 	}
@@ -166,7 +166,7 @@ func (a *AmqpActivity) PublishMessage(message string) error {
 	err := a.resExch.Publish(message)
 	if err != nil {
 		// Timeout occurred
-		activityLog.Error(fmt.Sprintf("Error occurred while trying to publish to Exchange '%s'", a.resExch.ExchangeName))
+		activityLog.Error(fmt.Sprintf("[amqpact] Error occurred while trying to publish to Exchange '%s'", a.resExch.ExchangeName))
 		return err
 	}
 	return nil

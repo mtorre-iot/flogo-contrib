@@ -83,7 +83,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 			val = context.GetInput(ivParams)
 
 			if val == nil {
-				err := activity.NewError("Path Params not specified, required for URI: "+uri, "", nil)
+				err := activity.NewError("[kxrest] Path Params not specified, required for URI: "+uri, "", nil)
 				return false, err
 			}
 		}
@@ -101,7 +101,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 		uri = uri + "?" + qp.Encode()
 	}
 
-	activityLog.Infof("REST Call: [%s] %s\n", method, uri)
+	activityLog.Debugf("[kxrest] REST Call: [%s] %s\n", method, uri)
 
 	var reqBody io.Reader
 
@@ -136,10 +136,10 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	}
 
 	// Set headers
-	activityLog.Debug("Setting HTTP request headers...")
+	activityLog.Debugf("[kxrest] Setting HTTP request headers...")
 	if headers, ok := context.GetInput(ivHeader).(map[string]string); ok && len(headers) > 0 {
 		for key, value := range headers {
-			activityLog.Debugf("%s: %s", key, value)
+			activityLog.Debugf("[kxrest] %s: %s", key, value)
 			req.Header.Set(key, value)
 		}
 	}
@@ -153,11 +153,11 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	if ok && len(proxyValue) > 0 {
 		proxyURL, urlErr := url.Parse(proxyValue)
 		if urlErr != nil {
-			activityLog.Debug("Error parsing proxy url:", urlErr)
+			activityLog.Debug("[kxrest] Error parsing proxy url:", urlErr)
 			return false, urlErr
 		}
 
-		activityLog.Debug("Setting proxy server:", proxyValue)
+		activityLog.Debug("[kxrest] Setting proxy server:", proxyValue)
 		httpTransportSettings.Proxy = http.ProxyURL(proxyURL)
 	}
 
@@ -175,7 +175,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 		return false, err
 	}
 
-	activityLog.Debug("response Status:", resp.Status)
+	activityLog.Debug("[kxrest] response Status:", resp.Status)
 	respBody, _ := ioutil.ReadAll(resp.Body)
 
 	var result interface{}
@@ -184,7 +184,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	d.UseNumber()
 	err = d.Decode(&result)
 
-	activityLog.Debug("response Body:", result)
+	activityLog.Debug("[kxrest] response Body:", result)
 
 	var resultx kxcommon.AnalyticsResponse
 	json.Unmarshal(respBody, &resultx)
@@ -216,7 +216,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	// Open the RealTime DB
 	err = rtdb.OpenRTDB()
 	if err != nil {
-		activityLog.Error(fmt.Sprintf("Realtime Database could not be opened. Error %s", err))
+		activityLog.Error(fmt.Sprintf("[kxrest] Realtime Database could not be opened. Error %s", err))
 	return false, err
 	}
 	// make sure it closes after finish
@@ -225,7 +225,7 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	for _, tag := range outputTags {
 		outputObjs[tag], err = rtdb.GetRTPObject(tag)
 		if (err != nil)	{
-			activityLog.Error(fmt.Sprintf("Tag: %s could not be accessed from Realtime Database. Error %s", tag, err))
+			activityLog.Error(fmt.Sprintf("[kxrest] Tag: %s could not be accessed from Realtime Database. Error %s", tag, err))
 			return false, err
 		}
 	}
@@ -239,10 +239,10 @@ func (a *KXRESTActivity) Eval(context activity.Context) (done bool, err error) {
 	}
 	jsonMessage, err := kxcommon.SerializeObject(scanMessage)
 	if err != nil {
-		activityLog.Error(fmt.Sprintf("Error trying to serialize output message. Error %s", err))
+		activityLog.Error(fmt.Sprintf("[kxrest] Error trying to serialize output message. Error %s", err))
 		return false, err
 	}
-	activityLog.Info(fmt.Sprintf("Output Message: %s", jsonMessage))
+	activityLog.Debug(fmt.Sprintf("[kxrest] Output Message: %s", jsonMessage))
 	context.SetOutput(ovMessage, jsonMessage) 
 
 	return true, nil
