@@ -1,0 +1,36 @@
+{
+  "name": "knox-kxreadrtdb",
+  "type": "flogo:activity",
+  "ref": "github.com/mtorre-iot/flogo-contrib/activity/kxreadrtdb",
+  "version": "0.0.1",
+  "title": "KNOX Update message filter",
+  "author": "Mario Torre <mtorre.work@gmail.com>",
+  "description": "KNOX Read Realtime database",
+  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxreadrtdb",
+  "input":[
+    {
+      "name": "RTDBFile",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "inputTags",
+      "type": "params",
+      "required": true
+    },
+    {
+      "name": "functionName",
+      "type": "string",
+      "value": "",
+      "required": true
+    }
+
+  ],
+  "output": [
+    {
+      "name": "outputStream",
+      "type": "string"
+    }
+  ]
+}
