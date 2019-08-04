@@ -3,7 +3,7 @@
   "type": "flogo:activity",
   "ref": "github.com/mtorre-iot/flogo-contrib/activity/kxreadrtdb",
   "version": "0.0.1",
-  "title": "KNOX Update message filter",
+  "title": "KNOX Read RealTime DB",
   "author": "Mario Torre <mtorre.work@gmail.com>",
   "description": "KNOX Read Realtime database",
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxreadrtdb",
