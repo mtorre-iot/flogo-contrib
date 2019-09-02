@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"sync"
-
+	"math/rand"
 	"github.com/TIBCOSoftware/flogo-lib/core/data"
 	"github.com/TIBCOSoftware/flogo-lib/core/trigger"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
@@ -144,7 +144,7 @@ func (t *AmqpTrigger) Start() error {
 	if  err != nil {
 		return err
 	}
-	requestQueueName := t.config.Id
+	requestQueueName := t.config.Id + fmt.Sprintf("-%d", rand.Intn(1000))
 
 	requestExchangeType, err := t.checkParameter(rqExchangeType)
 	if err != nil {
