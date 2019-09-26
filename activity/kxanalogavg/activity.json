@@ -1,0 +1,40 @@
+{
+  "name": "knox-kxanalogavg",
+  "type": "flogo:activity",
+  "ref": "github.com/mtorre-iot/flogo-contrib/activity/kxanalogavg",
+  "version": "0.0.1",
+  "title": "KNOX Calculate Analog averages",
+  "author": "Mario Torre <mtorre.work@gmail.com>",
+  "description": "KNOX Calculate Analog Averages",
+  "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxanalogavg",
+  "input":[
+    {
+      "name": "TSDB",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "pObjectConfigFile",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
+    {
+      "name": "inputTags",
+      "type": "params",
+      "required": true
+    },
+    {
+      "name": "outputTags",
+      "type": "params",
+      "required": true
+    }
+  ],
+  "output": [
+    {
+      "name": "outputStream",
+      "type": "string"
+    }
+  ]
+}
