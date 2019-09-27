@@ -96,6 +96,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 		 // create an array of KXHistTSRecord out of the response
 		 for _, res := range resp.Results {
 			 for _,sr := range res.Series {
+				 fmt.Printf("name: %s\n", sr.Name)
 				 for _, tag := range sr.Tags {
 					 fmt.Printf("tags: %s\n", tag) 
 				 }
