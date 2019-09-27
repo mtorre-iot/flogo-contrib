@@ -99,7 +99,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			if result == nil {
 				activityLog.Debugf("[kxanalogavg] No time stamp records found for %s", tag)
 			}
-			activityLog.Debugf("result %v", result)
+			activityLog.Infof("result %v", result)
 		}
 	} 
 	//
