@@ -3,9 +3,9 @@
   "type": "flogo:activity",
   "ref": "github.com/mtorre-iot/flogo-contrib/activity/kxrest",
   "version": "0.0.1",
-  "title": "Invoke KNOX Analytics REST Service",
+  "title": "KNOX Invoke Analytics REST Service",
   "author": "Mario Torre <mtorre.work@gmail.com>",
-  "description": "Invoke a KNOX Analytics REST Activity",
+  "description": "KNOX Invoke Analytics REST Activity",
   "homepage": "https://github.com/mtorre-iot/flogo-contrib/tree/master/activity/kxrest",
   "input":[
     {
