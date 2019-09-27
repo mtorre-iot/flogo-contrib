@@ -49,7 +49,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	outputTags := context.GetInput(ivOutputTags) 
 
 	// decode (unmarshall) the TSDB server pars
-	//<hostname>:<port>:<userName>:<password>:<databaseNane>:<historyTable>:<precision>
+	//<hostname>:<port>:<userName>:<password>:<databaseName>:<historyTable>:<precision>
 	
  	tsdbPars := strings.Split(tsdbString,":")
 	// create the Time Stamp DB access object
@@ -99,6 +99,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			if result == nil {
 				activityLog.Debugf("[kxanalogavg] No time stamp records found for %s", tag)
 			}
+			activityLog.Debugf("result %v", result)
 		}
 	} 
 	//

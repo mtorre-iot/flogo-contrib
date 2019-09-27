@@ -63,13 +63,13 @@ func (tsdb *TSDB) CloseTSDB() error {
 }
 
 // QueryTSOneTagTimeRange get records from TimeStamped database for one tag in a time range
-func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag string, startTimeStamp time.Time, endTimeStamp time.Time) ([]KXHistTSRecord, error){
+func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag string, startTimeStamp time.Time, endTimeStamp time.Time) (interface{}, error){
 	// start building the query sentence
 	// select time, "tag", value from timeseries where "tag" = 'IED1.A.TOTALSCANS' and "time" = 1553356273872000000
 
 	startTimeMs := startTimeStamp.Format(time.RFC3339)
 	endTimeMs := endTimeStamp.Format(time.RFC3339)
-	var rtn []KXHistTSRecord
+	//var rtn []KXHistTSRecord
 
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
@@ -97,5 +97,5 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 		 fmt.Println(resp.Results)
 	}
 	// not found - return nil
-	return rtn, nil
+	return resp.Results, nil
 }
