@@ -1,13 +1,13 @@
 package kxanalogavg
 
 import (
-	//"fmt"
+	"fmt"
 	//"errors"
-	//"strings"
-	//"strconv"
+	"strings"
+	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
-	//"github.com/mtorre-iot/flogo-contrib/activity/kxcommon"
+	"github.com/mtorre-iot/flogo-contrib/activity/kxcommon"
 )
 
 // activityLog is the default logger for the Log Activity
@@ -42,16 +42,16 @@ func (a *KXAnalogAvgActivity) Metadata() *activity.Metadata {
 
 // Eval implements api.Activity.Eval - Logs the Message
 func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err error) {
-/* 
+ 
 	tsdbString := context.GetInput(ivTSDB).(string)
 	pObjectConfigFile := context.GetInput(ivpObjectConfigFile).(string)
 	inputTags := context.GetInput(ivInputTags)
-	outputTags := context.GetInput(ivOutputTags) */
+	outputTags := context.GetInput(ivOutputTags) 
 
 	// decode (unmarshall) the TSDB server pars
 	//<hostname>:<port>:<userName>:<password>:<databaseNane>:<historyTable>:<precision>
 	
-/* 	tsdbPars := strings.Split(tsdbString,":")
+ 	tsdbPars := strings.Split(tsdbString,":")
 	// create the Time Stamp DB access object
 
 	port, err := strconv.Atoi(tsdbPars[1])
@@ -70,7 +70,8 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	// check all tags
 	_ = inputTags
 	_ =outputTags
-	_ =pObjectConfigFile */
+	_ =pObjectConfigFile 
+	activityLog.Info("arrived OK")
 /* 	for key, pobj := range inputObjs {
 		if pobj.Tag == "" {
 						inputObjs[key], err = rtdb.GetRTPObject(key)
@@ -96,7 +97,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	//	return false, err
 	//}
 	//activityLog.Debugf("[kxanalogavg] Output Message: %s", requestJson)
-	//context.SetOutput(ovOutput, "OK")
+	context.SetOutput(ovOutput, "OK")
 
 	return true, nil
 }
