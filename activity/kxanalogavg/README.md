@@ -3,7 +3,7 @@ title: kxanalogavg
 weight: 4615
 ---
 
-# Log
+# KXAnalogAvg
 This activity allows you to calculate the analog averages of specific tagnames.
 
 ## Installation
@@ -25,7 +25,13 @@ Inputs and Outputs:
       "type": "string",
       "value": "",
       "required": true
-    }
+    },
+    {
+      "name": "pObjConfigFile",
+      "type": "string",
+      "value": "",
+      "required": true
+    },
     {
       "name": "inputTags",
       "type": "params",
