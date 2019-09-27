@@ -94,7 +94,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	//
 	if (len(resp.Results) > 0) {
 		 // create an array of KXHistTSRecord out of the response
-		 fmt.Println(resp.Results)
+		 //fmt.Println(resp.Results)
 	}
 	// not found - return nil
 	return resp.Results, nil
