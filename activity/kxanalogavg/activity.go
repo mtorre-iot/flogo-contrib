@@ -3,6 +3,7 @@ package kxanalogavg
 import (
 	"fmt"
 	//"errors"
+	"time"
 	"strings"
 	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
@@ -45,7 +46,6 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
  
 	tsdbString := context.GetInput(ivTSDB).(string)
 	pObjectConfigFile := context.GetInput(ivpObjectConfigFile).(string)
-	inputTags := context.GetInput(ivInputTags)
 	outputTags := context.GetInput(ivOutputTags) 
 
 	// decode (unmarshall) the TSDB server pars
@@ -58,8 +58,24 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	if err != nil {
 		return false, err
 	}
-	tsdb := kxcommon.TSDBNew(tsdbPars[0], port, tsdbPars[2],tsdbPars[3]) 
+	hostName := tsdbPars[0]
+	userName := tsdbPars[2]
+	password := tsdbPars[3]
+	databaseName := tsdbPars[4]
+	tableName := tsdbPars[5]
+
+	// get the input tags
+	inputTagsInterface :=  context.GetInput(ivInputTags).(map[string]interface{})
+	inputTags := make(map[string]string) 
+
+	for key, value := range inputTagsInterface {
+    	strKey := fmt.Sprintf("%v", key)
+        strValue := fmt.Sprintf("%v", value)
+        inputTags[strKey] = strValue
+	}
+
 	// Open the TSDB
+	tsdb := kxcommon.TSDBNew(hostName, port, userName, password) 
 	err = tsdb.OpenTSDB()
 	if err != nil {
 		activityLog.Error(fmt.Sprintf("[kxanalogavg] Time Stamp Database could not be opened. Error %s", err))
@@ -68,19 +84,23 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	// make sure it closes after finish
 	defer tsdb.CloseTSDB()
 	// check all tags
-	_ = inputTags
 	_ =outputTags
 	_ =pObjectConfigFile 
-	activityLog.Info("arrived OK")
-/* 	for key, pobj := range inputObjs {
-		if pobj.Tag == "" {
-						inputObjs[key], err = rtdb.GetRTPObject(key)
+	//
+	// Go get history data of each tag from kxhistDB
+	// 
+ 	for key, tag := range inputTags {
+		if tag != "" {
+			result, err := tsdb.QueryTSOneTagTimeRange(databaseName, tableName, tag, time.Now(), time.Now())
 			if (err != nil)	{
-				activityLog.Error(fmt.Sprintf("[kxanalogavg] Tag: %s could not be accessed from Realtime Database. Error %s", key, err))
+				activityLog.Error(fmt.Sprintf("[kxanalogavg] Tag: %s could not be accessed from Time Stamp database. Error %s", key, err))
 				return false, err
 			}
+			if result == nil {
+				activityLog.Debugf("[kxanalogavg] No time stamp records found for %s", tag)
+			}
 		}
-	} */
+	} 
 	//
 	// We should have the input values. Let's create the output argument message
 	//
