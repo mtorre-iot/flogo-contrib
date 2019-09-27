@@ -2,7 +2,7 @@ package kxanalogavg
 
 import (
 	"fmt"
-	"errors"
+	//"errors"
 	"strings"
 	"strconv"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
@@ -54,11 +54,11 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	tsdbPars := strings.Split(tsdbString,":")
 	// create the Time Stamp DB access object
 
-	port, err := strconv.Atoi(rtdbPars[1])
+	port, err := strconv.Atoi(tsdbPars[1])
 	if err != nil {
 		return false, err
 	}
-	tsdb := kxcommon.TSDBNew(rtdbPars[0], port, rtdbPars[2],rtdbPars[3]) 
+	tsdb := kxcommon.TSDBNew(tsdbPars[0], port, tsdbPars[2],tsdbPars[3]) 
 	// Open the TSDB
 	err = tsdb.OpenTSDB()
 	if err != nil {
@@ -68,23 +68,27 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	// make sure it closes after finish
 	defer tsdb.CloseTSDB()
 	// check all tags
-	for key, pobj := range inputObjs {
-		if pobj.Tag == "" {]
+	_ = inputTags
+	_ =outputTags
+	_ =pObjectConfigFile
+	
+/* 	for key, pobj := range inputObjs {
+		if pobj.Tag == "" {
 						inputObjs[key], err = rtdb.GetRTPObject(key)
 			if (err != nil)	{
 				activityLog.Error(fmt.Sprintf("[kxanalogavg] Tag: %s could not be accessed from Realtime Database. Error %s", key, err))
 				return false, err
 			}
 		}
-	}
+	} */
 	//
 	// We should have the input values. Let's create the output argument message
 	//
-	args:= [] kxcommon.AnalyticsArg{}
+/* 	args:= [] kxcommon.AnalyticsArg{}
 	for _, pobj := range inputObjs {
 		key,_ := kxcommon.Mapkey(inputTags, pobj.Tag)
 		args = append(args, kxcommon.AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
-	}
+	} */
 	//request := kxcommon.AnalyticsRequestNew(functionName, args)
 
 	//requestJson, err := kxcommon.SerializeObject(request)

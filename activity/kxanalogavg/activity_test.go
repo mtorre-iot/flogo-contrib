@@ -1,4 +1,4 @@
-package kxreadrtdb
+package kxanalogavg
 
 import (
 	"fmt"
