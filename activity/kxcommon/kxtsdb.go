@@ -94,7 +94,20 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	//
 	if (len(resp.Results) > 0) {
 		 // create an array of KXHistTSRecord out of the response
+		 for _, res := range resp.Results {
+			 for _,sr := range res.Series {
+				 for _, tag := range sr.Tags {
+					 fmt.Printf("tags: %s\n", tag) 
+				 }
+				 for _, col := range sr.Columns {
+					fmt.Printf("cols: %s\n", col) 
+				 }
+				 for _, val := range sr.Values {
+					 fmt.Printf("values: %s\n", val)
+				 }
+			 }
 		 }
+	}
 	// not found - return nil
 	return resp.Results, nil
 }
