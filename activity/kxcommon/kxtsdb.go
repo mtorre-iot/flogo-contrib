@@ -63,13 +63,13 @@ func (tsdb *TSDB) CloseTSDB() error {
 }
 
 // QueryTSOneTagTimeRange get records from TimeStamped database for one tag in a time range
-func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag string, startTimeStamp time.Time, endTimeStamp time.Time) (interface{}, error){
+func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag string, startTimeStamp time.Time, endTimeStamp time.Time) ([]map[string]interface{}, error){
 	// start building the query sentence
 	// select time, "tag", value from timeseries where "tag" = 'IED1.A.TOTALSCANS' and "time" = 1553356273872000000
 
 	startTimeMs := startTimeStamp.Format(time.RFC3339)
 	endTimeMs := endTimeStamp.Format(time.RFC3339)
-	//var rtn []KXHistTSRecord
+	var rtn []map[string]interface{}
 
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
@@ -93,22 +93,21 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	// any rows returned?
 	//
 	if (len(resp.Results) > 0) {
+		 //res := make (map[string]string, len(res.Series.Columns))
 		 // create an array of KXHistTSRecord out of the response
-		 for _, res := range resp.Results {
+		 for i, res := range resp.Results {
 			 for _,sr := range res.Series {
-				 fmt.Printf("name: %s\n", sr.Name)
-				 for _, tag := range sr.Tags {
-					 fmt.Printf("tags: %s\n", tag) 
-				 }
-				 for _, col := range sr.Columns {
-					fmt.Printf("cols: %s\n", col) 
-				 }
-				 for _, val := range sr.Values {
-					 fmt.Printf("values: %s\n", val)
-				 }
+				fmt.Printf("name: %s\n", sr.Name)
+
+				var rec map[string]interface{}
+				for j, col := range sr.Columns {
+					rec[col] = sr.Values[i][j] 
+				}
+				fmt.Printf("rec: %v\n", rec) 
+				rtn = append(rtn, rec)
 			 }
 		 }
 	}
 	// not found - return nil
-	return resp.Results, nil
+	return rtn, nil
 }
