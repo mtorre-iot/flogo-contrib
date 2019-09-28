@@ -67,24 +67,22 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	// start building the query sentence
 	// select time, "tag", value from timeseries where "tag" = 'IED1.A.TOTALSCANS' and "time" = 1553356273872000000
 
-	startTimeMs := startTimeStamp.Format(time.RFC3339)
-	endTimeMs := endTimeStamp.Format(time.RFC3339)
+	startTimeMs := startTimeStamp.UnixNano()
+	endTimeMs := endTimeStamp.UnixNano()
 	var rtn []map[string]interface{}
 
-	fmt.Printf("start Time: %s - end time: %s\n", startTimeMs, endTimeMs)
+	fmt.Printf("start Time: %d - end time: %d\n", startTimeMs, endTimeMs)
 
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
 //	q = fmt.Sprintf("SELECT * FROM %s WHERE time > '%s' - 3600s", Measurement, t)
-	whereClause := fmt.Sprintf(" where time >= '%s' and time <= '%s'", startTimeMs, endTimeMs)
+	whereClause := fmt.Sprintf(" where time >= '%d' and time <= '%d'", startTimeMs, endTimeMs)
 
 	queryStr = fmt.Sprintf(queryStr, fieldStr, table, whereClause)
-
-	queryStr2 := " select %s from %s"
-	queryStr2 = fmt.Sprintf(queryStr2, fieldStr, table)
+	fmt.Printf("Query: %s\n", queryStr)
 
 	query := influxdb.Query {
-		Command: queryStr2,
+		Command: queryStr,
 		Database: database,
 	}
 	resp, err := tsdb.connection.Query(query)
