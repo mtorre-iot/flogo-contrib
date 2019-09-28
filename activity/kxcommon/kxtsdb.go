@@ -71,6 +71,8 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	endTimeMs := endTimeStamp.Format(time.RFC3339)
 	var rtn []map[string]interface{}
 
+	fmt.Printf("start Time: %s - end time: %s\n", startTimeMs, endTimeMs)
+
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
 //	q = fmt.Sprintf("SELECT * FROM %s WHERE time > '%s' - 3600s", Measurement, t)
@@ -103,7 +105,6 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 					for j, col := range sr.Columns {
 						rec[col] = val[j] 
 					}
-					fmt.Printf("rec: %v\n", rec) 
 					rtn = append(rtn, rec)
 				}
 			 }
