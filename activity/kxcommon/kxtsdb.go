@@ -95,16 +95,17 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	if (len(resp.Results) > 0) {
 		 //res := make (map[string]string, len(res.Series.Columns))
 		 // create an array of KXHistTSRecord out of the response
-		 for i, res := range resp.Results {
+		 for _, res := range resp.Results {
 			 for _,sr := range res.Series {
 				fmt.Printf("name: %s\n", sr.Name)
-
-				rec := make(map[string]interface{})
-				for j, col := range sr.Columns {
-					rec[col] = sr.Values[i][j] 
+				for _, val := range sr.Values {
+					rec := make(map[string]interface{})
+					for j, col := range sr.Columns {
+						rec[col] = val[j] 
+					}
+					fmt.Printf("rec: %v\n", rec) 
+					rtn = append(rtn, rec)
 				}
-				fmt.Printf("rec: %v\n", rec) 
-				rtn = append(rtn, rec)
 			 }
 		 }
 	}
