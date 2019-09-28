@@ -99,7 +99,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 			 for _,sr := range res.Series {
 				fmt.Printf("name: %s\n", sr.Name)
 
-				var rec map[string]interface{}
+				rec := make(map[string]interface{})
 				for j, col := range sr.Columns {
 					rec[col] = sr.Values[i][j] 
 				}
