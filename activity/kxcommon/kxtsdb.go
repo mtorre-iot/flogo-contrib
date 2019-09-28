@@ -75,7 +75,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
-	whereClause := fmt.Sprintf(" where time 'tag' = '%s' >= %d and time <= %d", tag, startTimeMs, endTimeMs)
+	whereClause := fmt.Sprintf(" where \"tag\" = '%s' and time >= %d and time <= %d", tag, startTimeMs, endTimeMs)
 
 	queryStr = fmt.Sprintf(queryStr, fieldStr, table, whereClause)
 	fmt.Printf("Query: %s\n", queryStr)
