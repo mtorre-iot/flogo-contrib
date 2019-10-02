@@ -107,6 +107,52 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 			 }
 		 }
 	}
-	// not found - return nil
+	return rtn, nil
+}
+
+// QueryTSOneTagLastValue get lasr record from TimeStamped database for one tag where time < specified
+func (tsdb *TSDB)  QueryTSOneTagLastValue(database string, table string, tag string, endTimeStamp time.Time) ([]map[string]interface{}, error){
+	// start building the query sentence
+	// select time, "tag", value from timeseries where "tag" = 'IED1.A.TOTALSCANS' and "time" = 1553356273872000000
+
+	endTimeMs := endTimeStamp.UnixNano()
+	var rtn []map[string]interface{}
+
+	fmt.Printf("end time: %d\n", endTimeMs)
+
+	queryStr := " select %s from %s %s"
+	fieldStr := "*"
+	whereClause := fmt.Sprintf(" where \"tag\" = '%s' and time <= %d order by time desc limit 1", tag, endTimeMs)
+
+	queryStr = fmt.Sprintf(queryStr, fieldStr, table, whereClause)
+	fmt.Printf("Query: %s\n", queryStr)
+
+	query := influxdb.Query {
+		Command: queryStr,
+		Database: database,
+	}
+	resp, err := tsdb.connection.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	//
+	// any rows returned?
+	//
+	if (len(resp.Results) > 0) {
+		 //res := make (map[string]string, len(res.Series.Columns))
+		 // create an array of KXHistTSRecord out of the response
+		 for _, res := range resp.Results {
+			 for _,sr := range res.Series {
+				fmt.Printf("name: %s\n", sr.Name)
+				for _, val := range sr.Values {
+					rec := make(map[string]interface{})
+					for j, col := range sr.Columns {
+						rec[col] = val[j] 
+					}
+					rtn = append(rtn, rec)
+				}
+			 }
+		 }
+	}
 	return rtn, nil
 }

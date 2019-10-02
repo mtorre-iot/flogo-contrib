@@ -102,6 +102,20 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				activityLog.Debugf("[kxanalogavg] No time stamp records found for %s", tag)
 			}
 			activityLog.Infof("result %v", result)
+			
+			result, err = tsdb.QueryTSOneTagLastValue(databaseName, tableName, tag,
+				time.Date(2019, 9, 26, 23, 34, 36, 137000, time.UTC))
+		   if (err != nil)	{
+			   activityLog.Error(fmt.Sprintf("[kxanalogavg] Tag: %s could not be accessed from Time Stamp database. Error %s", key, err))
+			   return false, err
+		   }
+		   if result == nil {
+			   activityLog.Debugf("[kxanalogavg] No time stamp records found for %s", tag)
+		   }
+		   activityLog.Infof("result %v", result)
+
+
+
 		}
 	} 
 	//
