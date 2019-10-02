@@ -92,8 +92,8 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
  	for key, tag := range inputTags {
 		if tag != "" {
 			result, err := tsdb.QueryTSOneTagTimeRange(databaseName, tableName, tag,
-				 time.Date(2019, 9, 26, 23, 34, 05, 684000, time.UTC), 
-				 time.Date(2019, 9, 26, 23, 34, 36, 137000, time.UTC))
+				 time.Date(2019, 9, 26, 23, 34, 05, 684000000, time.UTC), 
+				 time.Date(2019, 9, 26, 23, 34, 36, 137000000, time.UTC))
 			if (err != nil)	{
 				activityLog.Error(fmt.Sprintf("[kxanalogavg] Tag: %s could not be accessed from Time Stamp database. Error %s", key, err))
 				return false, err
