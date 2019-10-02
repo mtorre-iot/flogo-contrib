@@ -111,12 +111,12 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 }
 
 // QueryTSOneTagLastValue get lasr record from TimeStamped database for one tag where time < specified
-func (tsdb *TSDB)  QueryTSOneTagLastValue(database string, table string, tag string, endTimeStamp time.Time) ([]map[string]interface{}, error){
+func (tsdb *TSDB)  QueryTSOneTagLastValue(database string, table string, tag string, endTimeStamp time.Time) (map[string]interface{}, error){
 	// start building the query sentence
 	// select time, "tag", value from timeseries where "tag" = 'IED1.A.TOTALSCANS' and "time" = 1553356273872000000
 
 	endTimeMs := endTimeStamp.UnixNano()
-	var rtn []map[string]interface{}
+	var rtn map[string]interface{}
 
 	fmt.Printf("end time: %d\n", endTimeMs)
 
@@ -144,12 +144,9 @@ func (tsdb *TSDB)  QueryTSOneTagLastValue(database string, table string, tag str
 		 for _, res := range resp.Results {
 			 for _,sr := range res.Series {
 				fmt.Printf("name: %s\n", sr.Name)
-				for _, val := range sr.Values {
-					rec := make(map[string]interface{})
-					for j, col := range sr.Columns {
-						rec[col] = val[j] 
-					}
-					rtn = append(rtn, rec)
+				rtn = make(map[string]interface{})
+				for j, col := range sr.Columns {
+					rtn[col] = sr.Values[0][j] 
 				}
 			 }
 		 }
