@@ -122,7 +122,7 @@ func (tsdb *TSDB)  QueryTSOneTagLastValue(database string, table string, tag str
 
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
-	whereClause := fmt.Sprintf(" where \"tag\" = '%s' and time <= %d order by time desc limit 1", tag, endTimeMs)
+	whereClause := fmt.Sprintf(" where \"tag\" = '%s' and time < %d order by time desc limit 1", tag, endTimeMs)
 
 	queryStr = fmt.Sprintf(queryStr, fieldStr, table, whereClause)
 	//fmt.Printf("Query: %s\n", queryStr)
