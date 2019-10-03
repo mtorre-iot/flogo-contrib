@@ -105,7 +105,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				return false, err
 			}
 			windowStartTime := time.Date(2019, 9, 26, 23, 34, 23, 447000000, time.UTC)
-			//windowEndTime := time.Date(2019, 9, 26, 23, 34, 05, 684000000, time.UTC)
+			windowEndTime := time.Date(2019, 9, 26, 23, 34, 05, 684000000, time.UTC)
 
 			
 			activityLog.Infof("result %v", windowResult)
@@ -117,7 +117,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 		   	}
 			noDataBeforeWindow := len(lastValueOutOfWindow) == 0 
 			if (len(windowResult) == 0) && noDataBeforeWindow {
-				activityLog.Debugf("[kxanalogavg] No time stamp records found for %s in the time range - skipped", tag)
+				activityLog.Debugf("[kxanalogavg] No time stamp records found for %s in the time window - skipped", tag)
 				continue
 			}
 		   	activityLog.Infof("result2 %v", lastValueOutOfWindow)
@@ -156,11 +156,23 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				avgItem := avgItems {t, v}
 				avgData = append(avgData, avgItem)
 			}
-			for _, v := range avgData {
+			var avg float64
+			var prevTime time.Time
+			totalInterval := windowEndTime.Sub(windowStartTime).Nanoseconds() 
+			for i, v := range avgData {
 				activityLog.Infof("Time %s", v.tim.String())
 				activityLog.Infof("Value %d", v.val)
-
+				if i == 0 {
+					prevTime = v.tim
+				} else if i == len(avgData) {
+					avg = avg + float64(windowEndTime.Sub(prevTime).Nanoseconds()) * v.val / float64(totalInterval)
+				} else {
+					avg = avg + float64(v.tim.Sub(prevTime).Nanoseconds()) * v.val / float64(totalInterval)
+					prevTime = v.tim
+				}
 			}
+			activityLog.Infof("average %f", avg)
+			
 		}
 	} 
 	//
