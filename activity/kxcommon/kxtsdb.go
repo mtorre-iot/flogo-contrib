@@ -14,6 +14,7 @@ type TSDB struct {
 	port			int
 	userName 		string
 	password		string
+	precision		string
 	connection		influxdb.Client
 	isConnected		bool
 }
@@ -39,7 +40,7 @@ var (
 
 // TSDBNew creates a new Time Series DB connection object
 func TSDBNew (hostName string, port int, userName string, password string) *TSDB {
-	return &TSDB{hostName, port, userName, password, nil, false}
+	return &TSDB{hostName, port, userName, password, "ns", nil, false}
 }
 
 // OpenTSDB opens the Time-Stamped DB
@@ -83,7 +84,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	query := influxdb.Query {
 		Command: queryStr,
 		Database: database,
-		Precision: "ns",
+		Precision: tsdb.precision,
 	}
 	resp, err := tsdb.connection.Query(query)
 	if err != nil {
