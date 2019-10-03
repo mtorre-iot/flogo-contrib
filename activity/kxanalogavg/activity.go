@@ -98,7 +98,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
  	for key, tag := range inputTags {
 		if tag != "" {
 
-			windowStartTime := time.Date(2019, 9, 26, 23, 34,  8, 224000000, time.UTC)
+			windowStartTime := time.Date(2019, 9, 26, 23, 34,  8, 200000000, time.UTC)
 			windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 23, 446000000, time.UTC)
 
 			windowResult, err := tsdb.QueryTSOneTagTimeRange(databaseName, tableName, tag,
@@ -156,6 +156,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				avgItem := avgItems {t, v}
 				avgData = append(avgData, avgItem)
 			}
+
 			var avg float64
 			var prevTime time.Time
 			var prevVal float64
