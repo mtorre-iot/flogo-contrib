@@ -105,7 +105,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				return false, err
 			}
 			windowStartTime := time.Date(2019, 9, 26, 23, 34, 23, 447000000, time.UTC)
-			windowEndTime := time.Date(2019, 9, 26, 23, 34, 05, 684000000, time.UTC)
+			windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 36, 137000000, time.UTC)
 
 			
 			activityLog.Infof("result %v", windowResult)
