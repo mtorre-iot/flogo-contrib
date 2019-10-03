@@ -138,7 +138,13 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			// go through all values
 			for _, wr := range windowResult {
 				//get record time
-				t := wr["time"].(time.Time)
+
+				str := wr["time"].(string)
+				t, err := time.Parse("2006-01-02T15:04:05.000Z", str)
+				if err != nil {
+					activityLog.Debugf("[kxanalogavg] time  is invalid %s for tag %s - skipped", str, tag)
+					continue
+				} 
 				tim = append(tim, t)
 				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
 				if err != nil {
