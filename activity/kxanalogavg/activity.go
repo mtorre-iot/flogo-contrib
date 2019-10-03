@@ -126,11 +126,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			t0 = windowStartTime
 
 			if !noDataBeforeWindow {  
-				v, err = strconv.ParseFloat(lastValueOutOfWindow["value"].(string), 64)
-				if err != nil {
-					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string), tag)
-					continue
-				} 
+				v = lastValueOutOfWindow["value"].(float64)
 				tim = append(tim, t0)
 				val = append (val, v) 
 			}
@@ -139,11 +135,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				//get record time
 				t := wr["time"].(time.Time)
 				tim = append(tim, t)
-				v, err = strconv.ParseFloat(lastValueOutOfWindow["value"].(string), 64)
-				if err != nil {
-					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string))
-					continue
-				} 
+				v = lastValueOutOfWindow["value"].(float64)
 				val = append(val, v)
 			}
 			activityLog.Infof("times %v", tim)
