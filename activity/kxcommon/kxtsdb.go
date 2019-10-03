@@ -98,7 +98,11 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 				for _, val := range sr.Values {
 					rec := make(map[string]interface{})
 					for j, col := range sr.Columns {
-						rec[col] = fmt.Sprintf("%s", val[j]) 
+						if col == "time" {
+							rec[col] = val[j].(time.Time).UnixNano() 
+						} else {
+							rec[col] = val[j] 
+						}
 					}
 					rtn = append(rtn, rec)
 				}
