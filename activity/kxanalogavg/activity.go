@@ -117,7 +117,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 		   	}
 			noDataBeforeWindow := len(lastValueOutOfWindow) == 0 
 			if (len(windowResult) == 0) && noDataBeforeWindow {
-				activityLog.Debugf("[kxanalogavg] No time stamp records found for %s in the time window - skipped", tag)
+				activityLog.Infof("[kxanalogavg] No time stamp records found for %s in the time window - skipped", tag)
 				continue
 			}
 		   	activityLog.Infof("result2 %v", lastValueOutOfWindow)
@@ -132,7 +132,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			if !noDataBeforeWindow {  
 				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
 				if err != nil {
-					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string), tag)
+					activityLog.Infof("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string), tag)
 					continue
 				}
 				avgItem := avgItems {t0, v}
@@ -146,12 +146,12 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				str := wr["time"].(string)
 				t, err := time.Parse("2006-01-02T15:04:05.000Z", str)
 				if err != nil {
-					activityLog.Debugf("[kxanalogavg] time  is invalid %s for tag %s - skipped", str, tag)
+					activityLog.Infof("[kxanalogavg] time  is invalid %s for tag %s - skipped", str, tag)
 					continue
 				} 
 				v, err = wr["value"].(json.Number).Float64()
 				if err != nil {
-					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string))
+					activityLog.Infof("[kxanalogavg] value is invalid %s for tag %s - skipped", wr["value"].(string))
 					continue
 				}
 				avgItem := avgItems {t, v}
