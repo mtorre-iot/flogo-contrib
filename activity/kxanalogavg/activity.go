@@ -163,8 +163,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			totalInterval := windowEndTime.Sub(windowStartTime).Nanoseconds() 
 			activityLog.Infof("total Interval %d", totalInterval)
 			for i, v := range avgData {
-				activityLog.Infof("Time %s", v.tim.String())
-				activityLog.Infof("Value %d", v.val)
+				activityLog.Infof("Time %d, Value %f", v.tim.UnixNano(), v.val)
 				if i == 0 {
 					prevTime = v.tim
 					prevVal = v.val
