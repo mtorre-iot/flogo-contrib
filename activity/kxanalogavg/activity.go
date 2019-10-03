@@ -15,6 +15,11 @@ import (
 // activityLog is the default logger for the Log Activity
 var activityLog = logger.GetLogger("activity-flogo-kxanalogavg")
 
+type avgItems struct {
+	tim  time.Time 
+	val float64
+}
+
 const (
 	ivpObjectConfigFile = "pObjectConfigFile"
 	ivInputTags = "inputTags"
@@ -118,9 +123,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 		   	activityLog.Infof("result2 %v", lastValueOutOfWindow)
 			//
 			//
-
-			tim  := make([]time.Time, 0) 
-			val := make([] float64, 0)
+			avgData := make([]avgItems, 0)
 			var t0 time.Time 
 			var v float64
 			
@@ -131,9 +134,9 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				if err != nil {
 					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string), tag)
 					continue
-				} 
-				tim = append(tim, t0)
-				val = append (val, v) 
+				}
+				avgItem := avgItems {t0, v}
+				avgData = append(avgData, avgItem) 
 			}
 			// go through all values
 			for _, wr := range windowResult {
@@ -145,17 +148,15 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 					activityLog.Debugf("[kxanalogavg] time  is invalid %s for tag %s - skipped", str, tag)
 					continue
 				} 
-				tim = append(tim, t)
 				v, err = wr["value"].(json.Number).Float64()
 				if err != nil {
 					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string))
 					continue
-				} 
-				val = append(val, v)
+				}
+				avgItem := avgItems {t, v}
+				avgData = append(avgData, avgItem)
 			}
-			activityLog.Infof("times %v", tim)
-			activityLog.Infof("values %v", val)
-
+			activityLog.Infof("times & Values %v", avgData)
 		}
 	} 
 	//
