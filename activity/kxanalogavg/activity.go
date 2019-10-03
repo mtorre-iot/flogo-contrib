@@ -156,7 +156,11 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				avgItem := avgItems {t, v}
 				avgData = append(avgData, avgItem)
 			}
-			activityLog.Infof("times & Values %v", avgData)
+			for _, v := range avgData {
+				activityLog.Infof("Time %s", v.tim.String())
+				activityLog.Infof("Value %d", v.val)
+
+			}
 		}
 	} 
 	//
