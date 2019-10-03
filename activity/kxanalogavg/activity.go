@@ -146,7 +146,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 					continue
 				} 
 				tim = append(tim, t)
-				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
+				v, err = wr["value"].(json.Number).Float64()
 				if err != nil {
 					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string))
 					continue
