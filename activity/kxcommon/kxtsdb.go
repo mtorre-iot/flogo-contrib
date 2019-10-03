@@ -83,6 +83,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	query := influxdb.Query {
 		Command: queryStr,
 		Database: database,
+		Precision: "ns",
 	}
 	resp, err := tsdb.connection.Query(query)
 	if err != nil {
