@@ -6,6 +6,7 @@ import (
 	"time"
 	"strings"
 	"strconv"
+	"encoding/json"
 	"github.com/TIBCOSoftware/flogo-lib/core/activity"
 	"github.com/TIBCOSoftware/flogo-lib/logger"
 	"github.com/mtorre-iot/flogo-contrib/activity/kxcommon"
@@ -126,7 +127,11 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			t0 = windowStartTime
 
 			if !noDataBeforeWindow {  
-				v = lastValueOutOfWindow["value"].(float64)
+				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
+				if err != nil {
+					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string), tag)
+					continue
+				} 
 				tim = append(tim, t0)
 				val = append (val, v) 
 			}
@@ -135,7 +140,11 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				//get record time
 				t := wr["time"].(time.Time)
 				tim = append(tim, t)
-				v = lastValueOutOfWindow["value"].(float64)
+				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
+				if err != nil {
+					activityLog.Debugf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string))
+					continue
+				} 
 				val = append(val, v)
 			}
 			activityLog.Infof("times %v", tim)
