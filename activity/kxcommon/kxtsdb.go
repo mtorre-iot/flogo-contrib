@@ -100,12 +100,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 				for _, val := range sr.Values {
 					rec := make(map[string]interface{})
 					for j, col := range sr.Columns {
-						if col == "time" {
-							rec[col] = val[j] 
-							fmt.Printf("Time: %s\n", val[j])
-						} else {
-							rec[col] = val[j] 
-						}
+						rec[col] = val[j] 
 					}
 					rtn = append(rtn, rec)
 				}
