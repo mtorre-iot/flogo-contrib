@@ -71,14 +71,14 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	endTimeMs := endTimeStamp.UnixNano()
 	var rtn []map[string]interface{}
 
-	fmt.Printf("start Time: %d - end time: %d\n", startTimeMs, endTimeMs)
+	//fmt.Printf("start Time: %d - end time: %d\n", startTimeMs, endTimeMs)
 
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
 	whereClause := fmt.Sprintf(" where \"tag\" = '%s' and time >= %d and time <= %d", tag, startTimeMs, endTimeMs)
 
 	queryStr = fmt.Sprintf(queryStr, fieldStr, table, whereClause)
-	fmt.Printf("Query: %s\n", queryStr)
+	//fmt.Printf("Query: %s\n", queryStr)
 
 	query := influxdb.Query {
 		Command: queryStr,
@@ -96,7 +96,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 		 // create an array of KXHistTSRecord out of the response
 		 for _, res := range resp.Results {
 			 for _,sr := range res.Series {
-				fmt.Printf("name: %s\n", sr.Name)
+				//fmt.Printf("name: %s\n", sr.Name)
 				for _, val := range sr.Values {
 					rec := make(map[string]interface{})
 					for j, col := range sr.Columns {
@@ -118,14 +118,14 @@ func (tsdb *TSDB)  QueryTSOneTagLastValue(database string, table string, tag str
 	endTimeMs := endTimeStamp.UnixNano()
 	var rtn map[string]interface{}
 
-	fmt.Printf("end time: %d\n", endTimeMs)
+	//fmt.Printf("end time: %d\n", endTimeMs)
 
 	queryStr := " select %s from %s %s"
 	fieldStr := "*"
 	whereClause := fmt.Sprintf(" where \"tag\" = '%s' and time <= %d order by time desc limit 1", tag, endTimeMs)
 
 	queryStr = fmt.Sprintf(queryStr, fieldStr, table, whereClause)
-	fmt.Printf("Query: %s\n", queryStr)
+	//fmt.Printf("Query: %s\n", queryStr)
 
 	query := influxdb.Query {
 		Command: queryStr,
@@ -143,7 +143,7 @@ func (tsdb *TSDB)  QueryTSOneTagLastValue(database string, table string, tag str
 		 // create an array of KXHistTSRecord out of the response
 		 for _, res := range resp.Results {
 			 for _,sr := range res.Series {
-				fmt.Printf("name: %s\n", sr.Name)
+				//fmt.Printf("name: %s\n", sr.Name)
 				rtn = make(map[string]interface{})
 				for j, col := range sr.Columns {
 					rtn[col] = sr.Values[0][j] 
