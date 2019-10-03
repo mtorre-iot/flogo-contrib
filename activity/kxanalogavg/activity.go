@@ -143,12 +143,12 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			for _, wr := range windowResult {
 				//get record time
 
-				str := wr["time"].(string)
-				t, err := time.Parse("2006-01-02T15:04:05.000Z", str)
+				tint, err := wr["time"].(json.Number).Int64()
 				if err != nil {
-					activityLog.Infof("[kxanalogavg] time  is invalid %s for tag %s - skipped", str, tag)
+					activityLog.Infof("[kxanalogavg] time  is invalid %s for tag %s - skipped", wr["time"], tag)
 					continue
-				} 
+				}
+				t := time.Unix(0, tint)
 				v, err = wr["value"].(json.Number).Float64()
 				if err != nil {
 					activityLog.Infof("[kxanalogavg] value is invalid %s for tag %s - skipped", wr["value"].(string))
