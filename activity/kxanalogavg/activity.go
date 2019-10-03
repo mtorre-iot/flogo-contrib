@@ -136,6 +136,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 					continue
 				}
 				avgItem := avgItems {t0, v}
+				activityLog.Infof("%v", avgItem)
 				avgData = append(avgData, avgItem) 
 			}
 			// go through all values
@@ -154,6 +155,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 					continue
 				}
 				avgItem := avgItems {t, v}
+				activityLog.Infof("%v", avgItem)
 				avgData = append(avgData, avgItem)
 			}
 
