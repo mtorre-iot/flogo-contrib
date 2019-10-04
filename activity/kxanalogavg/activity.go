@@ -29,7 +29,7 @@ const (
 )
 
 func init() {
-	activityLog.SetLogLevel(logger.InfoLevel)
+	activityLog.SetLogLevel(logger.DebugLevel)
 }
 
 // KXAnalogAvgActivity is an Activity that is used get time stamp data from tags, and calculate averages 
@@ -52,8 +52,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
  
 	tsdbString := context.GetInput(ivTSDB).(string)
 	pObjectConfigFile := context.GetInput(ivpObjectConfigFile).(string)
-	outputTags := context.GetInput(ivOutputTags) 
-
+	
 	// decode (unmarshall) the TSDB server pars
 	//<hostname>:<port>:<userName>:<password>:<databaseName>:<historyTable>:<precision>
 	
@@ -79,6 +78,15 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
         strValue := fmt.Sprintf("%v", value)
         inputTags[strKey] = strValue
 	}
+	// get the output tags
+	outputTagsInterface :=  context.GetInput(ivOutputTags).(map[string]interface{})
+	outputTags := make(map[string]string) 
+
+	for key, value := range outputTagsInterface {
+    	strKey := fmt.Sprintf("%v", key)
+        strValue := fmt.Sprintf("%v", value)
+        outputTags[strKey] = strValue
+	}
 
 	// Open the TSDB
 	tsdb := kxcommon.TSDBNew(hostName, port, userName, password) 
@@ -89,13 +97,15 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	}
 	// make sure it closes after finish
 	defer tsdb.CloseTSDB()
-	// check all tags
-	_ =outputTags
 	_ =pObjectConfigFile 
+	var response kxcommon.AnalyticsResponse 
 	//
 	// Go get history data of each tag from kxhistDB
 	// 
+	badData := false
  	for key, tag := range inputTags {
+		var avg float64
+
 		if tag != "" {
 
 			windowStartTime := time.Date(2019, 9, 26, 23, 34, 14, 000000000, time.UTC)
@@ -107,123 +117,134 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 			windowResult, err := tsdb.QueryTSOneTagTimeRange(databaseName, tableName, tag,
 				 windowStartTime, windowEndTime)
 			if (err != nil)	{
-				activityLog.Error(fmt.Sprintf("[kxanalogavg] Tag: %s could not be accessed from Time Stamp database. Error %s", key, err))
+				activityLog.Errorf("[kxanalogavg] Tag: %s could not be accessed from Time Stamp database. Error %s", key, err)
 				return false, err
 			}
 			
-			activityLog.Infof("result %v", windowResult)
-			
 			lastValueOutOfWindow, err := tsdb.QueryTSOneTagLastValue(databaseName, tableName, tag, windowStartTime)
 		   	if (err != nil)	{
-			   activityLog.Error(fmt.Sprintf("[kxanalogavg] Tag: %s could not be accessed from Time Stamp database. Error %s", key, err))
+			   activityLog.Errorf("[kxanalogavg] Tag: %s could not be accessed from Time Stamp database. Error %s", key, err)
 			   return false, err
 		   	}
 			noDataBeforeWindow := len(lastValueOutOfWindow) == 0 
 			noDataInWindow := len(windowResult) == 0
 			if noDataInWindow && noDataBeforeWindow {
-				activityLog.Infof("[kxanalogavg] No time stamp records found for %s in the time window - skipped", tag)
-				continue
+				activityLog.Warnf("[kxanalogavg] No time stamp records found for %s in the time window - skipped", tag)
+				badData = true
 			}
-		   	activityLog.Infof("result2 %v", lastValueOutOfWindow)
-			//
-			//
 			avgData := make([]avgItems, 0)
 			var t0 time.Time 
 			var v float64
+
+			if !badData {
 			
-			t0 = windowStartTime
+				t0 = windowStartTime
 
-			if !noDataBeforeWindow {  
-				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
-				if err != nil {
-					activityLog.Infof("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string), tag)
-					continue
+				if !noDataBeforeWindow {  
+					v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
+					if err != nil {
+						activityLog.Warnf("[kxanalogavg] value is invalid %s for tag %s - skipped", lastValueOutOfWindow["value"].(string), tag)
+						badData = true
+						continue
+					}
+					avgItem := avgItems {t0, v}
+					activityLog.Debugf("%v", avgItem)
+					avgData = append(avgData, avgItem) 
 				}
-				avgItem := avgItems {t0, v}
-				activityLog.Infof("%v", avgItem)
-				avgData = append(avgData, avgItem) 
-			}
-			// go through all values
-			for _, wr := range windowResult {
-				//get record time
+				// go through all values
+				for _, wr := range windowResult {
+					//get record time
 
-				tint, err := wr["time"].(json.Number).Int64()
-				if err != nil {
-					activityLog.Infof("[kxanalogavg] time  is invalid %d for tag %s - skipped", wr["time"].(json.Number), tag)
-					continue
+					tint, err := wr["time"].(json.Number).Int64()
+					if err != nil {
+						activityLog.Warnf("[kxanalogavg] time is invalid %d for tag %s - skipped", wr["time"].(json.Number), tag)
+						badData = true
+						continue
+					}
+					t := time.Unix(0, tint)
+					v, err = wr["value"].(json.Number).Float64()
+					if err != nil {
+						activityLog.Warnf("[kxanalogavg] value is invalid %d for tag %s - skipped", wr["value"].(json.Number), tag)
+						badData = true
+						continue
+					}
+					avgItem := avgItems {t, v}
+					activityLog.Debugf("%v", avgItem)
+					avgData = append(avgData, avgItem)
 				}
-				t := time.Unix(0, tint)
-				v, err = wr["value"].(json.Number).Float64()
-				if err != nil {
-					activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", wr["value"].(json.Number), tag)
-					continue
-				}
-				avgItem := avgItems {t, v}
-				activityLog.Infof("%v", avgItem)
-				avgData = append(avgData, avgItem)
 			}
+			//
 			// add remaining 
 			//
-			if !noDataInWindow {
-				v, err = windowResult[len(windowResult)-1]["value"].(json.Number).Float64()
-				if err != nil {
-					activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", windowResult[len(windowResult)-1]["value"].(json.Number), tag)
-					continue
+			if !badData {
+				if !noDataInWindow {
+					v, err = windowResult[len(windowResult)-1]["value"].(json.Number).Float64()
+					if err != nil {
+						activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", windowResult[len(windowResult)-1]["value"].(json.Number), tag)
+						continue
+					}
+				} else {
+					v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
+					if err != nil {
+						activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", lastValueOutOfWindow["value"].(json.Number), tag)
+						continue
+					}
 				}
-			} else {
-				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
-				if err != nil {
-					activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", lastValueOutOfWindow["value"].(json.Number), tag)
-					continue
-				}
-			}
-			avgItem := avgItems {windowEndTime, v}
-			activityLog.Infof("%v", avgItem)
-			avgData = append(avgData, avgItem) 
+				avgItem := avgItems {windowEndTime, v}
+				activityLog.Debugf("%v", avgItem)
+				avgData = append(avgData, avgItem) 
 
-			var avg float64
-			var prevTime time.Time
-			var prevVal float64
-			var diff float64
-			var apt float64
+				var prevTime time.Time
+				var prevVal float64
+				var diff float64
+				var apt float64
 
-			totalInterval := avgData[len(avgData)-1].tim.Sub(avgData[0].tim).Nanoseconds() 
-			activityLog.Infof("total Interval %d", totalInterval)
-			for i, v := range avgData {
-				if i == len(avgData) {
-					diff = float64(windowEndTime.Sub(prevTime).Nanoseconds())
-					apt = diff * prevVal / float64(totalInterval)
-					avg = avg + apt
-				} else if (i != 0) {
-					diff = float64(v.tim.Sub(prevTime).Nanoseconds())
-					apt = diff * prevVal / float64(totalInterval)
-					avg = avg + apt
+				totalInterval := avgData[len(avgData)-1].tim.Sub(avgData[0].tim).Nanoseconds() 
+				activityLog.Infof("total Interval %d", totalInterval)
+				for i, v := range avgData {
+					if i == len(avgData) {
+						diff = float64(windowEndTime.Sub(prevTime).Nanoseconds())
+						apt = diff * prevVal / float64(totalInterval)
+						avg = avg + apt
+					} else if (i != 0) {
+						diff = float64(v.tim.Sub(prevTime).Nanoseconds())
+						apt = diff * prevVal / float64(totalInterval)
+						avg = avg + apt
+					}
+					activityLog.Debugf("Time %d, Diff: %f, Curvalue %f, PrevVal: %f, Apt: %f", v.tim.UnixNano(), diff, v.val, prevVal, apt)
+					prevTime = v.tim
+					prevVal = v.val
 				}
-				activityLog.Infof("Time %d, Diff: %f, Curvalue %f, PrevVal: %f, Apt: %f", v.tim.UnixNano(), diff, v.val, prevVal, apt)
-				prevTime = v.tim
-				prevVal = v.val
+				activityLog.Debugf("average %f", avg)
 			}
-			activityLog.Infof("average %f", avg)
-			
 		}
-	} 
+		//
+		// Calculation complete. Now place in the buffer for transmittal
+		//
+		if !badData {
+			outp := kxcommon.AnalyticsArgNew(key, fmt.Sprintf("%f", avg), kxcommon.QualityOk.String())
+			response.Results = append(response.Results, outp)
+		} else {
+			outp := kxcommon.AnalyticsArgNew(key, fmt.Sprintf("%f", 0.0), kxcommon.QualityBad.String())
+			response.Results = append(response.Results, outp)
+		}
+	}
 	//
-	// We should have the input values. Let's create the output argument message
+	// Create the json scan message back to KXDataproc
 	//
-/* 	args:= [] kxcommon.AnalyticsArg{}
-	for _, pobj := range inputObjs {
-		key,_ := kxcommon.Mapkey(inputTags, pobj.Tag)
-		args = append(args, kxcommon.AnalyticsArgNew(key, fmt.Sprintf("%f", pobj.Cv.Value), pobj.Cv.Quality.String()))
-	} */
-	//request := kxcommon.AnalyticsRequestNew(functionName, args)
-
-	//requestJson, err := kxcommon.SerializeObject(request)
-	//if (err != nil) {
-	//	activityLog.Error(fmt.Sprintf("[kxanalogavg] Error trying to serialize analytics request message. Error %s", err))
-	//	return false, err
-	//}
-	//activityLog.Debugf("[kxanalogavg] Output Message: %s", requestJson)
-	context.SetOutput(ovOutput, "OK")
-
+	scanMessage := kxcommon.ScanMessageNew()
+	for _,res := range response.Results {
+		messageType := kxcommon.MessageUnitTypeValue
+		if badData { messageType = kxcommon.MessageUnitTypeQuality} 
+		smu := kxcommon.ScanMessageUnitNew(-1, outputTags[res.Name], res.Value, res.Quality, messageType, time.Now().UTC())
+		scanMessage.ScanMessageAdd(smu)
+	}
+	jsonMessage, err := kxcommon.SerializeObject(scanMessage)
+	if err != nil {
+		activityLog.Error(fmt.Sprintf("[kxanalogavg] Error trying to serialize output message. Error %s", err))
+		return false, err
+	}
+	activityLog.Debug(fmt.Sprintf("[kxanalogavg] Output Message: %s", jsonMessage))
+	context.SetOutput(ovOutput, jsonMessage) 
 	return true, nil
 }
