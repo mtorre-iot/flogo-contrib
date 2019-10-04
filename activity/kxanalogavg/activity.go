@@ -170,10 +170,17 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 					activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", windowResult[len(windowResult)-1]["value"].(json.Number), tag)
 					continue
 				}
-				avgItem := avgItems {windowEndTime, v}
-				activityLog.Infof("%v", avgItem)
-				avgData = append(avgData, avgItem) 
+			} else {
+				v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
+				if err != nil {
+					activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", lastValueOutOfWindow["value"].(json.Number), tag)
+					continue
+				}
 			}
+			avgItem := avgItems {windowEndTime, v}
+			activityLog.Infof("%v", avgItem)
+			avgData = append(avgData, avgItem) 
+
 			var avg float64
 			var prevTime time.Time
 			var prevVal float64
