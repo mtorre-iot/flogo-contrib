@@ -90,6 +90,7 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	if err != nil {
 		return nil, err
 	}
+	fmt.Printf("result internal: %v", resp)
 	//
 	// any rows returned?
 	//
