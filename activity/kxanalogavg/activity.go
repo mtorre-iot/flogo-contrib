@@ -98,8 +98,8 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
  	for key, tag := range inputTags {
 		if tag != "" {
 
-			windowStartTime := time.Date(2019, 9, 26, 23, 33, 57, 000000000, time.UTC)
-			windowEndTime :=   time.Date(2019, 9, 26, 23, 35, 00, 000000000, time.UTC)
+			windowStartTime := time.Date(2019, 9, 26, 23, 34, 14, 000000000, time.UTC)
+			windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 21, 000000000, time.UTC)
 			//windowStartTime := time.Date(2019, 9, 26, 23, 37, 25, 000000000, time.UTC)
 			//windowEndTime :=   time.Date(2019, 9, 26, 23, 39, 24, 000000000, time.UTC)
 
