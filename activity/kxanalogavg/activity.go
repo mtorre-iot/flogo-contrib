@@ -99,7 +99,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 		if tag != "" {
 
 			windowStartTime := time.Date(2019, 9, 26, 23, 33, 58, 060000000, time.UTC)
-			windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 23, 446000000, time.UTC)
+			windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 24, 000000000, time.UTC)
 
 			windowResult, err := tsdb.QueryTSOneTagTimeRange(databaseName, tableName, tag,
 				 windowStartTime, windowEndTime)
