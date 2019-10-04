@@ -79,7 +79,6 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	whereClause := fmt.Sprintf(" where \"tag\" = '%s' and time >= %d and time <= %d", tag, startTimeMs, endTimeMs)
 
 	queryStr = fmt.Sprintf(queryStr, fieldStr, table, whereClause)
-	fmt.Printf("Query: %s\n", queryStr)
 
 	query := influxdb.Query {
 		Command: queryStr,
@@ -90,7 +89,6 @@ func (tsdb *TSDB)  QueryTSOneTagTimeRange(database string, table string, tag str
 	if err != nil {
 		return nil, err
 	}
-	fmt.Printf("result internal: %v", resp)
 	//
 	// any rows returned?
 	//
