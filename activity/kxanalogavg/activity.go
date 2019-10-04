@@ -178,7 +178,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 					prevTime = v.tim
 					prevVal = v.val
 				}
-				activityLog.Infof("Time %d, Diff: %f, Value %f, Avg: %f", v.tim.UnixNano(), diff, v.val, diff * prevVal / float64(totalInterval))
+				activityLog.Infof("Time %d, Diff: %f, Curvalue %f, PrevVal: %f, Avg: %f", v.tim.UnixNano(), diff, v.val, prevVal, diff * prevVal / float64(totalInterval))
 
 			}
 			activityLog.Infof("average %f", avg)
