@@ -200,7 +200,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				var apt float64
 
 				totalInterval := avgData[len(avgData)-1].tim.Sub(avgData[0].tim).Nanoseconds() 
-				activityLog.Infof("total Interval %d", totalInterval)
+				activityLog.Debugf("total Interval %d", totalInterval)
 				for i, v := range avgData {
 					if i == len(avgData) {
 						diff = float64(windowEndTime.Sub(prevTime).Nanoseconds())
