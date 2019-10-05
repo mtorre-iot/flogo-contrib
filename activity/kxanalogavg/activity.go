@@ -93,11 +93,17 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
         strValue := fmt.Sprintf("%v", value)
         outputTags[strKey] = strValue
 	}
+	// Check if number of input tags matches with output tags
+	if len(inputTags) != len(outputTags) {
+		activityLog.Errorf("[kxanalogavg] TimeNumber of Input Tags do not match with number of Output Tags.")
+		return false, err
+	}
+
 	// Open the TSDB
 	tsdb := kxcommon.TSDBNew(hostName, port, userName, password) 
 	err = tsdb.OpenTSDB()
 	if err != nil {
-		activityLog.Error(fmt.Sprintf("[kxanalogavg] Time Stamp Database could not be opened. Error %s", err))
+		activityLog.Errorf("[kxanalogavg] Time Stamp Database could not be opened. Error %s", err)
 		return false, err
 	}
 	// make sure it closes after finish
