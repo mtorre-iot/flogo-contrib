@@ -22,7 +22,7 @@
     },
     {
       "name": "inputTags",
-      "type": "object",
+      "type": "params",
       "required": true
     },
     {
