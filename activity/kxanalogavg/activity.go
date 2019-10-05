@@ -162,7 +162,6 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 						continue
 					}
 					avgItem := avgItems {t0, v}
-					activityLog.Debugf("%v", avgItem)
 					avgData = append(avgData, avgItem) 
 				}
 				// go through all values
@@ -183,7 +182,6 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 						continue
 					}
 					avgItem := avgItems {t, v}
-					activityLog.Debugf("%v", avgItem)
 					avgData = append(avgData, avgItem)
 				}
 			}
@@ -205,7 +203,6 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 					}
 				}
 				avgItem := avgItems {windowEndTime, v}
-				activityLog.Debugf("%v", avgItem)
 				avgData = append(avgData, avgItem) 
 
 				var prevTime time.Time
