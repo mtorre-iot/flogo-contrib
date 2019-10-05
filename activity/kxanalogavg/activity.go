@@ -120,12 +120,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				continue
 			}
 			windowEndTime := time.Now().UTC()
-			windowStartTime := windowEndTime.Add(-time.Duration(timeWindow) * time.Millisecond)
-			//windowStartTime := time.Date(2019, 9, 26, 23, 34, 14, 000000000, time.UTC)
-			//windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 21, 000000000, time.UTC)
-			//windowStartTime := time.Date(2019, 9, 26, 23, 37, 25, 000000000, time.UTC)
-			//windowEndTime :=   time.Date(2019, 9, 26, 23, 39, 24, 000000000, time.UTC)
-
+			windowStartTime := windowEndTime.Add(-time.Duration(timeWindow) * time.Second)
 
 			windowResult, err := tsdb.QueryTSOneTagTimeRange(databaseName, tableName, tag,
 				 windowStartTime, windowEndTime)
