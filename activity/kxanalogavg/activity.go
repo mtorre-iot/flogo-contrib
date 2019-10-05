@@ -77,11 +77,9 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	for key, value := range inputTagsInterface {
 		strKey := fmt.Sprintf("%v", key)
 		inpObj := value.(map[string]interface{})
-		strTag := fmt.Sprintf("%v", inpObj["tag"])
-		strWindow := fmt.Sprintf("%v", inpObj["window"])
 		comb := make(map[string]string)
-		comb["tag"] = strTag
-		comb["window"] = strWindow
+		comb["tag"] = fmt.Sprintf("%v", inpObj["tag"])
+		comb["window"] = fmt.Sprintf("%v", inpObj["window"])
         inputTags[strKey] = comb
 	}
 	activityLog.Debugf("%v", inputTags)
@@ -95,7 +93,6 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
         strValue := fmt.Sprintf("%v", value)
         outputTags[strKey] = strValue
 	}
-
 	// Open the TSDB
 	tsdb := kxcommon.TSDBNew(hostName, port, userName, password) 
 	err = tsdb.OpenTSDB()
@@ -115,9 +112,17 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 		var avg float64
 		tag := comb["tag"]
 		if  tag != "" {
-
-			windowStartTime := time.Date(2019, 9, 26, 23, 34, 14, 000000000, time.UTC)
-			windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 21, 000000000, time.UTC)
+			// get window and check it is valid
+			timeWindow, err := strconv.ParseInt(comb["window"], 10, 32)
+			if err != nil {
+				activityLog.Warnf("[kxanalogavg] Moving Average time window for %s invalid: %s - skipped", tag, comb["window"])
+				badData = true
+				continue
+			}
+			windowEndTime := time.Now().UTC()
+			windowStartTime := windowEndTime.Add(-time.Duration(timeWindow) * time.Millisecond)
+			//windowStartTime := time.Date(2019, 9, 26, 23, 34, 14, 000000000, time.UTC)
+			//windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 21, 000000000, time.UTC)
 			//windowStartTime := time.Date(2019, 9, 26, 23, 37, 25, 000000000, time.UTC)
 			//windowEndTime :=   time.Date(2019, 9, 26, 23, 39, 24, 000000000, time.UTC)
 
@@ -188,13 +193,13 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 				if !noDataInWindow {
 					v, err = windowResult[len(windowResult)-1]["value"].(json.Number).Float64()
 					if err != nil {
-						activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", windowResult[len(windowResult)-1]["value"].(json.Number), tag)
+						activityLog.Warnf("[kxanalogavg] value is invalid %d for tag %s - skipped", windowResult[len(windowResult)-1]["value"].(json.Number), tag)
 						continue
 					}
 				} else {
 					v, err = lastValueOutOfWindow["value"].(json.Number).Float64()
 					if err != nil {
-						activityLog.Infof("[kxanalogavg] value is invalid %d for tag %s - skipped", lastValueOutOfWindow["value"].(json.Number), tag)
+						activityLog.Warnf("[kxanalogavg] value is invalid %d for tag %s - skipped", lastValueOutOfWindow["value"].(json.Number), tag)
 						continue
 					}
 				}
