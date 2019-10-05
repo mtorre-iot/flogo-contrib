@@ -109,10 +109,10 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	// Go get history data of each tag from kxhistDB
 	// 
 	badData := false
- 	for key, tag := range inputTags {
+ 	for key, comb := range inputTags {
 		var avg float64
-
-		if tag != "" {
+		tag := comb["tag"]
+		if  tag != "" {
 
 			windowStartTime := time.Date(2019, 9, 26, 23, 34, 14, 000000000, time.UTC)
 			windowEndTime :=   time.Date(2019, 9, 26, 23, 34, 21, 000000000, time.UTC)
