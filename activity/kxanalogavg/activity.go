@@ -70,14 +70,20 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 	tableName := tsdbPars[5]
 
 	// get the input tags
-	inputTagsInterface :=  context.GetInput(ivInputTags).(map[string]interface{})
-	inputTags := make(map[string]string) 
+	inputTagsInterface :=  context.GetInput(ivInputTags).(map[string]map[string]interface{})
+	inputTags := make(map[string]map[string]string) 
 
 	for key, value := range inputTagsInterface {
-    	strKey := fmt.Sprintf("%v", key)
-        strValue := fmt.Sprintf("%v", value)
-        inputTags[strKey] = strValue
+		strKey := fmt.Sprintf("%v", key)
+		strTag := fmt.Sprintf("%v", value["tag"])
+		strWindow := fmt.Sprintf("%v", value["window"])
+		comb := make(map[string]string)
+		comb["tag"] = strTag
+		comb["window"] = strWindow
+        inputTags[strKey] = comb
 	}
+	activityLog.Debugf("%v", inputTags)
+
 	// get the output tags
 	outputTagsInterface :=  context.GetInput(ivOutputTags).(map[string]interface{})
 	outputTags := make(map[string]string) 

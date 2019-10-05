@@ -23,7 +23,8 @@
     {
       "name": "responseExchangeName",
       "type": "string",
-      "value": ""
+      "value": "",
+      "required": true
     },
     {
       "name": "responseExchangeType",
