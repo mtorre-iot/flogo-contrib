@@ -76,7 +76,7 @@ func (a *KXAnalogAvgActivity) Eval(context activity.Context) (done bool, err err
 
 	for key, value := range inputTagsInterface {
 		strKey := fmt.Sprintf("%v", key)
-		inpObj := value.(map[string]string)
+		inpObj := value.(map[string]interface{})
 		strTag := fmt.Sprintf("%v", inpObj["tag"])
 		strWindow := fmt.Sprintf("%v", inpObj["window"])
 		comb := make(map[string]string)
